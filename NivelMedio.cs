@@ -322,6 +322,10 @@ namespace Proyecto
         private void timer1_Tick(object? sender, EventArgs e)
         {
             Tiempo();
+            if (_cronometro.Elapsed >= TimeSpan.FromMinutes(3))
+            {
+                PerderTiempo();
+            }
         }
 
         private void Tiempo()
@@ -563,6 +567,24 @@ namespace Proyecto
                         break;
                 }
             }
+        }
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            Tiempo();
+            if (_cronometro.Elapsed >= TimeSpan.FromMinutes(3))
+            {
+                PerderTiempo();
+            }
+        }
+
+        private void PerderTiempo()
+        {
+            _cronometro.Stop();
+            timer1.Stop();
+            _partidasPerdidas++;
+            LblpartidasP.Text = $"Partidas Perdidas: {_partidasPerdidas}";
+            MessageBox.Show("Se ha agotado el tiempo. Esta partida se contará como perdida.",
+                "Tiempo Agotado", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
