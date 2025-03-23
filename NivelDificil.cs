@@ -71,54 +71,13 @@ namespace Proyecto
 
         private void NivelDificil_Load(object sender, EventArgs e)
         {
-            
-            EstilizarBotones();
-
             CrearCuadricula();
             LlenarSudoku();
             ConfigurarCronometro();
         }
 
         
-        private void EstilizarBotones()
-        {
-            
-            Color btnBackColor = this.BackColor;
-            Color btnMouseOver = Color.IndianRed;
-            Color btnMouseDown = Color.DarkRed;
-
-            btnPausar.FlatStyle = FlatStyle.Flat;
-            btnPausar.FlatAppearance.BorderSize = 0;
-            btnPausar.BackColor = btnBackColor;
-            btnPausar.ForeColor = Color.White;
-            btnPausar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnPausar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnPausar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnReanudar.FlatStyle = FlatStyle.Flat;
-            btnReanudar.FlatAppearance.BorderSize = 0;
-            btnReanudar.BackColor = btnBackColor;
-            btnReanudar.ForeColor = Color.White;
-            btnReanudar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnReanudar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnReanudar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnReinicar.FlatStyle = FlatStyle.Flat;
-            btnReinicar.FlatAppearance.BorderSize = 0;
-            btnReinicar.BackColor = btnBackColor;
-            btnReinicar.ForeColor = Color.White;
-            btnReinicar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnReinicar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnReinicar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnSolucion.FlatStyle = FlatStyle.Flat;
-            btnSolucion.FlatAppearance.BorderSize = 0;
-            btnSolucion.BackColor = btnBackColor;
-            btnSolucion.ForeColor = Color.White;
-            btnSolucion.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnSolucion.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnSolucion.FlatAppearance.MouseDownBackColor = btnMouseDown;
-        }
+        
 
         private void CrearCuadricula()
         {
@@ -204,7 +163,6 @@ namespace Proyecto
                     changedTxt.ForeColor = Color.DarkBlue;
                 }
 
-                // Comprueba si el sudoku está completo
                 bool isComplete = true;
                 for (int f = 0; f < SudokuSize; f++)
                 {
@@ -375,7 +333,9 @@ namespace Proyecto
                 _cronometro.Start();
                 timer1.Start();
                 _isPaused = false;
-                btnPausar.Text = "Pausar";
+                btnPausar.BackColor = SystemColors.Control;
+                btnReanudar.BackColor = SystemColors.Control;
+                btnPausar.Enabled = true;
                 btnReanudar.Enabled = false;
             }
             else
@@ -383,7 +343,9 @@ namespace Proyecto
                 _cronometro.Stop();
                 timer1.Stop();
                 _isPaused = true;
-                btnPausar.Text = "Pausado";
+                btnPausar.BackColor = Color.LightBlue;
+                btnReanudar.BackColor = Color.DarkGreen;
+                btnPausar.Enabled = false;
                 btnReanudar.Enabled = true;
             }
         }
@@ -535,7 +497,6 @@ namespace Proyecto
             }
         }
 
-        // Permite moverse con flechas entre las celdas.
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (sender is TextBox txt && txt.Tag is Point pos)

@@ -44,9 +44,9 @@
             // 
             LblpartidasP.AutoSize = true;
             LblpartidasP.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LblpartidasP.Location = new Point(289, 385);
+            LblpartidasP.Location = new Point(322, 578);
             LblpartidasP.Name = "LblpartidasP";
-            LblpartidasP.Size = new Size(115, 17);
+            LblpartidasP.Size = new Size(148, 23);
             LblpartidasP.TabIndex = 15;
             LblpartidasP.Text = "Partidas Perdidas";
             // 
@@ -54,18 +54,19 @@
             // 
             LblpartidasG.AutoSize = true;
             LblpartidasG.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LblpartidasG.Location = new Point(75, 385);
+            LblpartidasG.Location = new Point(11, 578);
             LblpartidasG.Name = "LblpartidasG";
-            LblpartidasG.Size = new Size(114, 17);
+            LblpartidasG.Size = new Size(147, 23);
             LblpartidasG.TabIndex = 14;
             LblpartidasG.Text = "Partidas Ganadas";
             // 
             // btnSolucion
             // 
             btnSolucion.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnSolucion.Location = new Point(362, 412);
+            btnSolucion.Location = new Point(322, 616);
+            btnSolucion.Margin = new Padding(3, 4, 3, 4);
             btnSolucion.Name = "btnSolucion";
-            btnSolucion.Size = new Size(95, 34);
+            btnSolucion.Size = new Size(114, 28);
             btnSolucion.TabIndex = 13;
             btnSolucion.Text = "Solución";
             btnSolucion.UseVisualStyleBackColor = true;
@@ -74,9 +75,10 @@
             // btnReanudar
             // 
             btnReanudar.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnReanudar.Location = new Point(243, 412);
+            btnReanudar.Location = new Point(179, 540);
+            btnReanudar.Margin = new Padding(3, 4, 3, 4);
             btnReanudar.Name = "btnReanudar";
-            btnReanudar.Size = new Size(101, 34);
+            btnReanudar.Size = new Size(124, 28);
             btnReanudar.TabIndex = 12;
             btnReanudar.Text = "Reanudar";
             btnReanudar.UseVisualStyleBackColor = true;
@@ -85,9 +87,10 @@
             // btnReinicar
             // 
             btnReinicar.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnReinicar.Location = new Point(136, 412);
+            btnReinicar.Location = new Point(11, 616);
+            btnReinicar.Margin = new Padding(3, 4, 3, 4);
             btnReinicar.Name = "btnReinicar";
-            btnReinicar.Size = new Size(89, 34);
+            btnReinicar.Size = new Size(117, 28);
             btnReinicar.TabIndex = 11;
             btnReinicar.Text = "Reiniciar ";
             btnReinicar.UseVisualStyleBackColor = true;
@@ -97,9 +100,10 @@
             // 
             btnPausar.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnPausar.ForeColor = Color.Black;
-            btnPausar.Location = new Point(42, 412);
+            btnPausar.Location = new Point(179, 573);
+            btnPausar.Margin = new Padding(3, 4, 3, 4);
             btnPausar.Name = "btnPausar";
-            btnPausar.Size = new Size(75, 34);
+            btnPausar.Size = new Size(124, 28);
             btnPausar.TabIndex = 10;
             btnPausar.Text = "Pausar";
             btnPausar.UseVisualStyleBackColor = true;
@@ -109,9 +113,9 @@
             // 
             lblTiempo.AutoSize = true;
             lblTiempo.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTiempo.Location = new Point(380, 23);
+            lblTiempo.Location = new Point(11, 544);
             lblTiempo.Name = "lblTiempo";
-            lblTiempo.Size = new Size(49, 15);
+            lblTiempo.Size = new Size(62, 20);
             lblTiempo.TabIndex = 9;
             lblTiempo.Text = "Tiempo";
             // 
@@ -119,9 +123,9 @@
             // 
             lblErrores.AutoSize = true;
             lblErrores.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblErrores.Location = new Point(380, 54);
+            lblErrores.Location = new Point(322, 544);
             lblErrores.Name = "lblErrores";
-            lblErrores.Size = new Size(77, 15);
+            lblErrores.Size = new Size(98, 20);
             lblErrores.TabIndex = 8;
             lblErrores.Text = "Total Errores";
             // 
@@ -131,10 +135,12 @@
             // 
             // NivelMedio
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(255, 192, 128);
-            ClientSize = new Size(498, 469);
+            BackgroundImage = Properties.Resources.medio2;
+            BackgroundImageLayout = ImageLayout.Stretch;
+            ClientSize = new Size(483, 657);
             Controls.Add(LblpartidasP);
             Controls.Add(LblpartidasG);
             Controls.Add(btnSolucion);
@@ -144,6 +150,7 @@
             Controls.Add(lblTiempo);
             Controls.Add(lblErrores);
             ForeColor = SystemColors.ControlText;
+            Margin = new Padding(3, 4, 3, 4);
             Name = "NivelMedio";
             Text = "NivelMedio";
             Load += NivelMedio_Load;
