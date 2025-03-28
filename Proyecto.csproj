@@ -22,5 +22,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Resources\ambient-hard.wav" />
+    <EmbeddedResource Include="Resources\ambient-hard.wav" />
+  </ItemGroup>
 
 </Project>

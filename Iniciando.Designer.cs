@@ -39,9 +39,10 @@
             // 
             // progressBar1
             // 
-            progressBar1.Location = new Point(123, 272);
+            progressBar1.Location = new Point(136, 321);
+            progressBar1.Margin = new Padding(3, 4, 3, 4);
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(144, 23);
+            progressBar1.Size = new Size(165, 31);
             progressBar1.TabIndex = 5;
             progressBar1.Visible = false;
             // 
@@ -49,9 +50,10 @@
             // 
             BtnPlay.BackgroundImage = (Image)resources.GetObject("BtnPlay.BackgroundImage");
             BtnPlay.BackgroundImageLayout = ImageLayout.Stretch;
-            BtnPlay.Location = new Point(171, 219);
+            BtnPlay.Location = new Point(189, 273);
+            BtnPlay.Margin = new Padding(3, 4, 3, 4);
             BtnPlay.Name = "BtnPlay";
-            BtnPlay.Size = new Size(48, 30);
+            BtnPlay.Size = new Size(55, 40);
             BtnPlay.TabIndex = 4;
             BtnPlay.UseVisualStyleBackColor = true;
             BtnPlay.Click += BtnPlay_Click;
@@ -59,9 +61,10 @@
             // pictureBox1
             // 
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(114, 53);
+            pictureBox1.Location = new Point(117, 92);
+            pictureBox1.Margin = new Padding(3, 4, 3, 4);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(172, 130);
+            pictureBox1.Size = new Size(197, 173);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 3;
             pictureBox1.TabStop = false;
@@ -72,13 +75,14 @@
             // 
             // Iniciando
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
-            ClientSize = new Size(400, 397);
+            ClientSize = new Size(457, 529);
             Controls.Add(progressBar1);
             Controls.Add(BtnPlay);
             Controls.Add(pictureBox1);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Iniciando";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Iniciando";
