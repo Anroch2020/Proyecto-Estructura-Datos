@@ -22,10 +22,21 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Remove="Resources\ambient-hard.wav" />
     <EmbeddedResource Include="Resources\ambient-hard.wav" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Remove="Resources\ambient-easy.wav" />
+    <EmbeddedResource Include="Resources\ambient-easy.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\ambient-easy.wav" />
+    <EmbeddedResource Include="Resources\ambient-medium.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Resources\ambient-easy.wav" />
+    <EmbeddedResource Include="Resources\ambient-menu.wav" />
+  </ItemGroup>
 </Project>
