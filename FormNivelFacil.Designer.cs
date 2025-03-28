@@ -48,7 +48,7 @@
             // 
             lblErrores.AutoSize = true;
             lblErrores.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblErrores.Location = new Point(432, 73);
+            lblErrores.Location = new Point(364, 556);
             lblErrores.Name = "lblErrores";
             lblErrores.Size = new Size(98, 20);
             lblErrores.TabIndex = 0;
@@ -58,7 +58,7 @@
             // 
             lblTiempo.AutoSize = true;
             lblTiempo.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTiempo.Location = new Point(432, 32);
+            lblTiempo.Location = new Point(12, 556);
             lblTiempo.Name = "lblTiempo";
             lblTiempo.Size = new Size(62, 20);
             lblTiempo.TabIndex = 1;
@@ -66,50 +66,54 @@
             // 
             // btnPausar
             // 
+            btnPausar.BackgroundImage = Properties.Resources.Pausar2;
+            btnPausar.BackgroundImageLayout = ImageLayout.Stretch;
             btnPausar.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnPausar.ForeColor = Color.Black;
-            btnPausar.Location = new Point(46, 551);
+            btnPausar.Location = new Point(243, 597);
             btnPausar.Margin = new Padding(3, 4, 3, 4);
             btnPausar.Name = "btnPausar";
-            btnPausar.Size = new Size(86, 45);
+            btnPausar.Size = new Size(45, 46);
             btnPausar.TabIndex = 2;
-            btnPausar.Text = "Pausar";
             btnPausar.UseVisualStyleBackColor = true;
             btnPausar.Click += btnPausar_Click_1;
             // 
             // btnReinicar
             // 
+            btnReinicar.BackgroundImage = Properties.Resources.Reiniciar;
+            btnReinicar.BackgroundImageLayout = ImageLayout.Stretch;
             btnReinicar.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnReinicar.Location = new Point(153, 551);
+            btnReinicar.Location = new Point(12, 651);
             btnReinicar.Margin = new Padding(3, 4, 3, 4);
             btnReinicar.Name = "btnReinicar";
-            btnReinicar.Size = new Size(102, 45);
+            btnReinicar.Size = new Size(50, 45);
             btnReinicar.TabIndex = 3;
-            btnReinicar.Text = "Reiniciar ";
             btnReinicar.UseVisualStyleBackColor = true;
             btnReinicar.Click += btnReinicar_Click;
             // 
             // btnReanudar
             // 
+            btnReanudar.BackgroundImage = Properties.Resources.Reanudar;
+            btnReanudar.BackgroundImageLayout = ImageLayout.Stretch;
             btnReanudar.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnReanudar.Location = new Point(275, 551);
+            btnReanudar.Location = new Point(243, 548);
             btnReanudar.Margin = new Padding(3, 4, 3, 4);
             btnReanudar.Name = "btnReanudar";
-            btnReanudar.Size = new Size(115, 45);
+            btnReanudar.Size = new Size(45, 41);
             btnReanudar.TabIndex = 4;
-            btnReanudar.Text = "Reanudar";
             btnReanudar.UseVisualStyleBackColor = true;
             btnReanudar.Click += btnReanudar_Click_1;
             // 
             // btnSolucion
             // 
+            btnSolucion.BackgroundImage = Properties.Resources.solucioj;
+            btnSolucion.BackgroundImageLayout = ImageLayout.Stretch;
             btnSolucion.Font = new Font("Perpetua Titling MT", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnSolucion.Location = new Point(411, 551);
+            btnSolucion.Location = new Point(466, 651);
             btnSolucion.Margin = new Padding(3, 4, 3, 4);
             btnSolucion.Name = "btnSolucion";
-            btnSolucion.Size = new Size(109, 45);
+            btnSolucion.Size = new Size(46, 45);
             btnSolucion.TabIndex = 5;
-            btnSolucion.Text = "Solución";
             btnSolucion.UseVisualStyleBackColor = true;
             btnSolucion.Click += btnSolucion_Click_1;
             // 
@@ -117,7 +121,7 @@
             // 
             LblpartidasG.AutoSize = true;
             LblpartidasG.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LblpartidasG.Location = new Point(83, 515);
+            LblpartidasG.Location = new Point(12, 597);
             LblpartidasG.Name = "LblpartidasG";
             LblpartidasG.Size = new Size(147, 23);
             LblpartidasG.TabIndex = 6;
@@ -127,7 +131,7 @@
             // 
             LblpartidasP.AutoSize = true;
             LblpartidasP.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            LblpartidasP.Location = new Point(328, 515);
+            LblpartidasP.Location = new Point(364, 597);
             LblpartidasP.Name = "LblpartidasP";
             LblpartidasP.Size = new Size(148, 23);
             LblpartidasP.TabIndex = 7;
@@ -139,7 +143,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(128, 255, 128);
             BackgroundImage = Properties.Resources.WhatsApp_Image_2025_03_21_at_20_40_13_0620133f;
-            ClientSize = new Size(565, 612);
+            ClientSize = new Size(565, 709);
             Controls.Add(LblpartidasP);
             Controls.Add(LblpartidasG);
             Controls.Add(btnSolucion);

@@ -73,7 +73,7 @@ namespace Proyecto
             InitializeComponent();
             this.BackColor = Color.Red;
             this.Paint += NivelDificil_Paint;
-            InicializarMusicaAmbiental();
+            
         }
 
         private void NivelDificil_Load(object sender, EventArgs e)
@@ -81,18 +81,35 @@ namespace Proyecto
             CrearCuadricula();
             LlenarSudoku();
             ConfigurarCronometro();
+            InicializarMusicaAmbiental();
         }
 
         private void InicializarMusicaAmbiental()
         {
             try
             {
-                // Intentar cargar desde un recurso incrustado
+                // Primero, detener y liberar cualquier reproductor de música existente
+                if (_musicaAmbiental != null)
+                {
+                    _musicaAmbiental.Stop();
+                    _musicaAmbiental.Dispose();
+                    _musicaAmbiental = null;
+                }
+
+                // Listar los recursos disponibles para depuración
                 var assembly = Assembly.GetExecutingAssembly();
+                Debug.WriteLine("Recursos disponibles:");
+                foreach (var resourceName in assembly.GetManifestResourceNames())
+                {
+                    Debug.WriteLine($" - {resourceName}");
+                }
+
+                // Intentar cargar desde un recurso incrustado
                 using (Stream stream = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-hard.wav"))
                 {
                     if (stream != null)
                     {
+                        Debug.WriteLine("Cargando música desde recurso incrustado");
                         _musicaAmbiental = new SoundPlayer(stream);
                         _musicaAmbiental.PlayLooping();
                         AgregarControlMusica();
@@ -122,6 +139,7 @@ namespace Proyecto
                     if (File.Exists(ruta))
                     {
                         rutaMusica = ruta;
+                        Debug.WriteLine($"Encontrado archivo en: {ruta}");
                         break;
                     }
                 }
@@ -143,35 +161,42 @@ namespace Proyecto
                                     stream.CopyTo(fileStream);
                                 }
                                 rutaMusica = customPath;
+                                Debug.WriteLine($"Archivo extraído a: {customPath}");
                             }
                         }
                     }
                     else
                     {
                         rutaMusica = customPath;
+                        Debug.WriteLine($"Usando archivo existente en: {customPath}");
                     }
                 }
 
                 if (rutaMusica == null)
                 {
+                    Debug.WriteLine("No se pudo encontrar el archivo de audio");
                     MessageBox.Show("No se pudo encontrar el archivo de audio 'ambient-hard.wav'.",
                         "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
+                Debug.WriteLine($"Reproduciendo música desde: {rutaMusica}");
                 _musicaAmbiental = new SoundPlayer(rutaMusica);
                 _musicaAmbiental.PlayLooping(); // Reproducir en bucle
+                Debug.WriteLine("Música iniciada correctamente");
 
                 // Agregar un botón para controlar el volumen
                 AgregarControlMusica();
             }
             catch (Exception ex)
             {
+                Debug.WriteLine($"Error al cargar la música ambiental: {ex.Message}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 MessageBox.Show($"Error al cargar la música ambiental: {ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Debug.WriteLine($"Error detallado: {ex}");
             }
         }
+
         private void AgregarControlMusica()
         {
             Button btnMusica = new Button();

@@ -5,15 +5,21 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Media;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 
 namespace Proyecto
 {
     public partial class FormNivelFacil : Form
     {
+        private SoundPlayer _musicaAmbiental;
+        private bool _musicaActiva = true;
+
         private const int SudokuSize = 9;
         private const int BoxSize = 3;
         private const int CellSize = 40;
@@ -57,6 +63,7 @@ namespace Proyecto
         public FormNivelFacil()
         {
             InitializeComponent();
+            
         }
 
         private void FormNivelFacil_Load(object sender, EventArgs e)
@@ -65,8 +72,158 @@ namespace Proyecto
             CrearCuadricula();
             LlenarSudoku();
             ConfigurarCronometro();
+            InicializarMusicaAmbiental();
+        }
+        private void InicializarMusicaAmbiental()
+        {
+            try
+            {
+                // Primero, detener y liberar cualquier reproductor de música existente
+                if (_musicaAmbiental != null)
+                {
+                    _musicaAmbiental.Stop();
+                    _musicaAmbiental.Dispose();
+                    _musicaAmbiental = null;
+                }
+
+                // Listar los recursos disponibles para depuración
+                var assembly = Assembly.GetExecutingAssembly();
+                Debug.WriteLine("Recursos disponibles:");
+                foreach (var resourceName in assembly.GetManifestResourceNames())
+                {
+                    Debug.WriteLine($" - {resourceName}");
+                }
+
+                // Intentar cargar desde un recurso incrustado
+                using (Stream stream = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-easy.wav"))
+                {
+                    if (stream != null)
+                    {
+                        Debug.WriteLine("Cargando música desde recurso incrustado");
+                        _musicaAmbiental = new SoundPlayer(stream);
+                        _musicaAmbiental.PlayLooping();
+                        AgregarControlMusica();
+                        return;
+                    }
+                }
+
+                // Si no se encuentra como recurso incrustado, intentar con las rutas de archivo
+                string rutaMusica = null;
+
+                // Depuración para ver dónde está buscando
+                Debug.WriteLine($"Ruta base: {Application.StartupPath}");
+
+                // Intentar varias rutas posibles
+                string[] posiblesRutas = new string[]
+                {
+                    Path.Combine(Application.StartupPath, "Resources", "ambient-easy.wav"),
+                    Path.Combine(Application.StartupPath, "ambient-easy.wav"),
+                    Path.Combine(Application.StartupPath, "..", "..", "Resources", "ambient-easy.wav"),
+                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "ambient-easy.wav")
+                };
+
+                // Mostrar todas las rutas para depuración
+                foreach (var ruta in posiblesRutas)
+                {
+                    Debug.WriteLine($"Intentando: {ruta} - Existe: {File.Exists(ruta)}");
+                    if (File.Exists(ruta))
+                    {
+                        rutaMusica = ruta;
+                        Debug.WriteLine($"Encontrado archivo en: {ruta}");
+                        break;
+                    }
+                }
+
+                if (rutaMusica == null)
+                {
+                    // Crear una ruta personalizada donde colocaremos el archivo
+                    string customPath = Path.Combine(Application.StartupPath, "ambient-easy.wav");
+
+                    // Si el archivo no existe en la ruta personalizada, intentar extraerlo del recurso
+                    if (!File.Exists(customPath))
+                    {
+                        using (Stream stream = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-easy.wav"))
+                        {
+                            if (stream != null)
+                            {
+                                using (FileStream fileStream = File.Create(customPath))
+                                {
+                                    stream.CopyTo(fileStream);
+                                }
+                                rutaMusica = customPath;
+                                Debug.WriteLine($"Archivo extraído a: {customPath}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        rutaMusica = customPath;
+                        Debug.WriteLine($"Usando archivo existente en: {customPath}");
+                    }
+                }
+
+                if (rutaMusica == null)
+                {
+                    Debug.WriteLine("No se pudo encontrar el archivo de audio");
+                    MessageBox.Show("No se pudo encontrar el archivo de audio 'ambient-easy.wav'.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                Debug.WriteLine($"Reproduciendo música desde: {rutaMusica}");
+                _musicaAmbiental = new SoundPlayer(rutaMusica);
+                _musicaAmbiental.PlayLooping(); // Reproducir en bucle
+                Debug.WriteLine("Música iniciada correctamente");
+
+                // Agregar un botón para controlar el volumen
+                AgregarControlMusica();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al cargar la música ambiental: {ex.Message}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                MessageBox.Show($"Error al cargar la música ambiental: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void AgregarControlMusica()
+        {
+            Button btnMusica = new Button();
+            btnMusica.Text = "🔊";
+            btnMusica.Size = new Size(30, 30);
+            btnMusica.Location = new Point(this.ClientSize.Width - 40, 10);
+            btnMusica.Click += (sender, e) =>
+            {
+                ToggleMusicaAmbiental();
+                btnMusica.Text = _musicaActiva ? "🔊" : "🔇";
+            };
+            this.Controls.Add(btnMusica);
         }
 
+        private void ToggleMusicaAmbiental()
+        {
+            if (_musicaActiva)
+            {
+                _musicaAmbiental.Stop();
+                _musicaActiva = false;
+            }
+            else
+            {
+                _musicaAmbiental.PlayLooping();
+                _musicaActiva = true;
+            }
+        }
+
+        // Asegurarse de detener la música al cerrar el formulario
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (_musicaAmbiental != null)
+            {
+                _musicaAmbiental.Stop();
+                _musicaAmbiental.Dispose();
+            }
+            base.OnFormClosing(e);
+        }
         private void LlenarSudoku()
         {
             for (int fila = 0; fila < SudokuSize; fila++)
