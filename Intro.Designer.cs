@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Intro));
             SuspendLayout();
             // 
             // Intro
@@ -36,8 +37,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.WhatsApp_Image_2025_03_21_at_20_57_01_0fb11a21;
             ClientSize = new Size(747, 450);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Intro";
-            Text = "Intro";
+            Text = "NumberMaster (Menu)";
             ResumeLayout(false);
         }
 

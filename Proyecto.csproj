@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>icono-sudoku.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\ambient-easy.wav" />
+    <Content Include="icono-sudoku.ico" />
     <EmbeddedResource Include="Resources\ambient-menu.wav" />
   </ItemGroup>
 </Project>

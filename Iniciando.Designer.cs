@@ -82,6 +82,7 @@
             Controls.Add(progressBar1);
             Controls.Add(BtnPlay);
             Controls.Add(pictureBox1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 4, 3, 4);
             Name = "Iniciando";
             StartPosition = FormStartPosition.CenterScreen;

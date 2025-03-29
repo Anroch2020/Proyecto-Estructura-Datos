@@ -40,9 +40,9 @@
             // 
             LblEstructura.AutoSize = true;
             LblEstructura.Font = new Font("Arial Rounded MT Bold", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LblEstructura.Location = new Point(117, 53);
+            LblEstructura.Location = new Point(134, 71);
             LblEstructura.Name = "LblEstructura";
-            LblEstructura.Size = new Size(211, 24);
+            LblEstructura.Size = new Size(279, 32);
             LblEstructura.TabIndex = 4;
             LblEstructura.Text = "Estructura de Datos";
             // 
@@ -50,40 +50,44 @@
             // 
             LblNombres.AutoSize = true;
             LblNombres.Font = new Font("Arial Rounded MT Bold", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LblNombres.Location = new Point(76, 175);
+            LblNombres.Location = new Point(87, 233);
             LblNombres.Name = "LblNombres";
-            LblNombres.Size = new Size(0, 18);
+            LblNombres.Size = new Size(0, 23);
             LblNombres.TabIndex = 7;
             // 
             // pictureBox1
             // 
             pictureBox1.BackgroundImageLayout = ImageLayout.Center;
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(353, 12);
+            pictureBox1.Location = new Point(403, 16);
+            pictureBox1.Margin = new Padding(3, 4, 3, 4);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(109, 65);
+            pictureBox1.Size = new Size(125, 87);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 8;
             pictureBox1.TabStop = false;
             // 
             // rtbIntegrantes
             // 
-            rtbIntegrantes.Location = new Point(66, 115);
+            rtbIntegrantes.Location = new Point(75, 153);
+            rtbIntegrantes.Margin = new Padding(3, 4, 3, 4);
             rtbIntegrantes.Name = "rtbIntegrantes";
-            rtbIntegrantes.Size = new Size(327, 185);
+            rtbIntegrantes.Size = new Size(373, 245);
             rtbIntegrantes.TabIndex = 9;
             rtbIntegrantes.Text = "";
             // 
             // Integrantes
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.MediumPurple;
-            ClientSize = new Size(468, 357);
+            ClientSize = new Size(535, 476);
             Controls.Add(rtbIntegrantes);
             Controls.Add(pictureBox1);
             Controls.Add(LblNombres);
             Controls.Add(LblEstructura);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Integrantes";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Integrantes";
