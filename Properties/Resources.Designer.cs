@@ -113,6 +113,16 @@ namespace Proyecto.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap reinciar3 {
+            get {
+                object obj = ResourceManager.GetObject("reinciar3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Reiniciar {
             get {
                 object obj = ResourceManager.GetObject("Reiniciar", resourceCulture);
