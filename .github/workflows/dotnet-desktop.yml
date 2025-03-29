@@ -52,8 +52,9 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
+    # Updated step to avoid naming conflict
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Build Artifacts
+        name: Build Artifacts ${{ matrix.configuration }}
         path: ${{ github.workspace }}/artifacts
