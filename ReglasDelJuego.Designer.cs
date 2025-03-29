@@ -68,7 +68,7 @@
         #endregion
 
         private Label LblSudoku;
-        private Button LblReglas;
+// private Button LblReglas;
         private RichTextBox rtbReglas;
     }
 }

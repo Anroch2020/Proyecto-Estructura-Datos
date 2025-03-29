@@ -27,69 +27,50 @@ namespace Proyecto
         private int _errores = 0;
         private int _partidasGanadas = 0;
         private int _partidasPerdidas = 0;
-        // Problema 2: Campo _cronometro no inicializado en constructor
         private Stopwatch _cronometro = new Stopwatch();
         private bool _isPaused = false;
         private TextBox[,] _textBoxes = new TextBox[SudokuSize, SudokuSize];
         private bool _showingSolution = false;
-        // Problema 1: Campo que no acepta nulos inicializado a null
         private TextBox? _focusedTextBox = null;
 
-        
         private readonly int[,] _sudokuMedio = {
-                { 5, 3, 4, 6, 7, 8, 9, 1, 2 },
-                { 6, 7, 2, 1, 9, 5, 3, 4, 8 },
-                { 1, 9, 8, 3, 4, 2, 5, 6, 7 },
-                { 8, 5, 9, 7, 6, 1, 4, 2, 3 },
-                { 4, 2, 6, 8, 5, 3, 7, 9, 1 },
-                { 7, 1, 3, 9, 2, 4, 8, 5, 6 },
-                { 9, 6, 1, 5, 3, 7, 2, 8, 4 },
-                { 2, 8, 7, 4, 1, 9, 6, 3, 5 },
-                { 3, 4, 5, 2, 8, 6, 1, 7, 9 }
-            };
+            { 5, 3, 4, 6, 7, 8, 9, 1, 2 },
+            { 6, 7, 2, 1, 9, 5, 3, 4, 8 },
+            { 1, 9, 8, 3, 4, 2, 5, 6, 7 },
+            { 8, 5, 9, 7, 6, 1, 4, 2, 3 },
+            { 4, 2, 6, 8, 5, 3, 7, 9, 1 },
+            { 7, 1, 3, 9, 2, 4, 8, 5, 6 },
+            { 9, 6, 1, 5, 3, 7, 2, 8, 4 },
+            { 2, 8, 7, 4, 1, 9, 6, 3, 5 },
+            { 3, 4, 5, 2, 8, 6, 1, 7, 9 }
+        };
 
-        
         private readonly bool[,] _posicionesFijas = {
-                
-                { true,  false, true,  true,  false, true,  false, true,  false },
-                
-                { true,  false, true,  false, true,  false, true,  false, true  },
-                
-                { true,  true,  false, true,  false, true,  false, false, true  },
-                
-                { true,  false, false, true,  true,  false, false, false, true  },
-                
-                { false, true,  true,  false, true,  false, true,  false, false },
-                
-                { true,  true,  false, true,  false, false, false, true,  false },
-                
-                { true,  false, true,  false, true,  false, true,  false, true  },
-                
-                { false, true,  false, true,  false, true,  false, true,  false },
-                
-                { true,  false, false, false, true,  false, true,  true,  true  }
-            };
+            { true,  false, true,  true,  false, true,  false, true,  false },
+            { true,  false, true,  false, true,  false, true,  false, true  },
+            { true,  true,  false, true,  false, true,  false, false, true  },
+            { true,  false, false, true,  true,  false, false, false, true  },
+            { false, true,  true,  false, true,  false, true,  false, false },
+            { true,  true,  false, true,  false, false, false, true,  false },
+            { true,  false, true,  false, true,  false, true,  false, true  },
+            { false, true,  false, true,  false, true,  false, true,  false },
+            { true,  false, false, false, true,  false, true,  true,  true  }
+        };
 
         public NivelMedio()
         {
             InitializeComponent();
-            this.Paint += NivelMedio_Paint; // Asegúrate de que el evento Paint está conectado
-            // No inicializar la música aquí, sino en el evento Load
+            this.Paint += NivelMedio_Paint;
         }
 
         private void InicializarMusicaAmbiental()
         {
             try
             {
-                // Primero, detener y liberar cualquier reproductor de música existente
-                if (_musicaAmbiental != null)
-                {
-                    _musicaAmbiental.Stop();
-                    _musicaAmbiental.Dispose();
-                    _musicaAmbiental = null;
-                }
+                _musicaAmbiental?.Stop();
+                _musicaAmbiental?.Dispose();
+                _musicaAmbiental = null;
 
-                // Listar los recursos disponibles para depuración
                 var assembly = Assembly.GetExecutingAssembly();
                 Debug.WriteLine("Recursos disponibles:");
                 foreach (var resourceName in assembly.GetManifestResourceNames())
@@ -97,8 +78,7 @@ namespace Proyecto
                     Debug.WriteLine($" - {resourceName}");
                 }
 
-                // Intentar cargar desde un recurso incrustado
-                using (Stream stream = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-medium.wav"))
+                using (Stream? stream = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-medium.wav"))
                 {
                     if (stream != null)
                     {
@@ -110,61 +90,7 @@ namespace Proyecto
                     }
                 }
 
-                // Si no se encuentra como recurso incrustado, intentar con las rutas de archivo
-                string rutaMusica = null;
-
-                // Depuración para ver dónde está buscando
-                Debug.WriteLine($"Ruta base: {Application.StartupPath}");
-
-                // Intentar varias rutas posibles
-                string[] posiblesRutas = new string[]
-                {
-            Path.Combine(Application.StartupPath, "Resources", "ambient-medium.wav"),
-            Path.Combine(Application.StartupPath, "ambient-medium.wav"),
-            Path.Combine(Application.StartupPath, "..", "..", "Resources", "ambient-medium.wav"),
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "ambient-medium.wav")
-                };
-
-                // Mostrar todas las rutas para depuración
-                foreach (var ruta in posiblesRutas)
-                {
-                    Debug.WriteLine($"Intentando: {ruta} - Existe: {File.Exists(ruta)}");
-                    if (File.Exists(ruta))
-                    {
-                        rutaMusica = ruta;
-                        Debug.WriteLine($"Encontrado archivo en: {ruta}");
-                        break;
-                    }
-                }
-
-                if (rutaMusica == null)
-                {
-                    // Crear una ruta personalizada donde colocaremos el archivo
-                    string customPath = Path.Combine(Application.StartupPath, "ambient-medium.wav");
-
-                    // Si el archivo no existe en la ruta personalizada, intentar extraerlo del recurso
-                    if (!File.Exists(customPath))
-                    {
-                        using (Stream stream = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-medium.wav"))
-                        {
-                            if (stream != null)
-                            {
-                                using (FileStream fileStream = File.Create(customPath))
-                                {
-                                    stream.CopyTo(fileStream);
-                                }
-                                rutaMusica = customPath;
-                                Debug.WriteLine($"Archivo extraído a: {customPath}");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        rutaMusica = customPath;
-                        Debug.WriteLine($"Usando archivo existente en: {customPath}");
-                    }
-                }
-
+                string? rutaMusica = BuscarRutaMusica();
                 if (rutaMusica == null)
                 {
                     Debug.WriteLine("No se pudo encontrar el archivo de audio");
@@ -175,10 +101,9 @@ namespace Proyecto
 
                 Debug.WriteLine($"Reproduciendo música desde: {rutaMusica}");
                 _musicaAmbiental = new SoundPlayer(rutaMusica);
-                _musicaAmbiental.PlayLooping(); // Reproducir en bucle
+                _musicaAmbiental.PlayLooping();
                 Debug.WriteLine("Música iniciada correctamente");
 
-                // Agregar un botón para controlar el volumen
                 AgregarControlMusica();
             }
             catch (Exception ex)
@@ -190,13 +115,63 @@ namespace Proyecto
             }
         }
 
+        private string? BuscarRutaMusica()
+        {
+            string baseDir = Application.StartupPath;
+            Debug.WriteLine($"Ruta base: {baseDir}");
+
+            string[] posiblesRutas = new string[]
+            {
+                Path.Combine(baseDir, "Resources", "ambient-medium.wav"),
+                Path.Combine(baseDir, "ambient-medium.wav"),
+                Path.Combine(baseDir, "..", "..", "Resources", "ambient-medium.wav"),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "ambient-medium.wav")
+            };
+
+            foreach (var ruta in posiblesRutas)
+            {
+                Debug.WriteLine($"Intentando: {ruta} - Existe: {File.Exists(ruta)}");
+                if (File.Exists(ruta))
+                {
+                    Debug.WriteLine($"Encontrado archivo en: {ruta}");
+                    return ruta;
+                }
+            }
+
+            string customPath = Path.Combine(baseDir, "ambient-medium.wav");
+            if (!File.Exists(customPath))
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                using (Stream? stream = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-medium.wav"))
+                {
+                    if (stream != null)
+                    {
+                        using (FileStream fileStream = File.Create(customPath))
+                        {
+                            stream.CopyTo(fileStream);
+                        }
+                        Debug.WriteLine($"Archivo extraído a: {customPath}");
+                        return customPath;
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"Usando archivo existente en: {customPath}");
+                return customPath;
+            }
+
+            return null;
+        }
 
         private void AgregarControlMusica()
         {
-            Button btnMusica = new Button();
-            btnMusica.Text = "🔊";
-            btnMusica.Size = new Size(30, 30);
-            btnMusica.Location = new Point(this.ClientSize.Width - 40, 10);
+            Button btnMusica = new Button
+            {
+                Text = "🔊",
+                Size = new Size(30, 30),
+                Location = new Point(this.ClientSize.Width - 40, 10)
+            };
             btnMusica.Click += (sender, e) =>
             {
                 ToggleMusicaAmbiental();
@@ -219,66 +194,43 @@ namespace Proyecto
             }
         }
 
-        // Asegurarse de detener la música al cerrar el formulario
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (_musicaAmbiental != null)
-            {
-                _musicaAmbiental.Stop();
-                _musicaAmbiental.Dispose();
-            }
+            _musicaAmbiental?.Stop();
+            _musicaAmbiental?.Dispose();
             base.OnFormClosing(e);
         }
+
         private void NivelMedio_Load(object sender, EventArgs e)
         {
             EstilizarBotones();
             CrearCuadricula();
             LlenarSudoku();
             ConfigurarCronometro();
-
-            // Inicializar la música después de que todo esté cargado
             InicializarMusicaAmbiental();
         }
 
-        
         private void EstilizarBotones()
         {
-           
             Color btnBackColor = Color.SandyBrown;
             Color btnMouseOver = Color.DarkSalmon;
             Color btnMouseDown = Color.Sienna;
 
-            btnPausar.FlatStyle = FlatStyle.Flat;
-            btnPausar.FlatAppearance.BorderSize = 0;
-            btnPausar.BackColor = btnBackColor;
-            btnPausar.ForeColor = Color.White;
-            btnPausar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnPausar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnPausar.FlatAppearance.MouseDownBackColor = btnMouseDown;
+            ConfigurarBoton(btnPausar, btnBackColor, btnMouseOver, btnMouseDown);
+            ConfigurarBoton(btnReanudar, btnBackColor, btnMouseOver, btnMouseDown);
+            ConfigurarBoton(btnReinicar, btnBackColor, btnMouseOver, btnMouseDown);
+            ConfigurarBoton(btnSolucion, btnBackColor, btnMouseOver, btnMouseDown);
+        }
 
-            btnReanudar.FlatStyle = FlatStyle.Flat;
-            btnReanudar.FlatAppearance.BorderSize = 0;
-            btnReanudar.BackColor = btnBackColor;
-            btnReanudar.ForeColor = Color.White;
-            btnReanudar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnReanudar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnReanudar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnReinicar.FlatStyle = FlatStyle.Flat;
-            btnReinicar.FlatAppearance.BorderSize = 0;
-            btnReinicar.BackColor = btnBackColor;
-            btnReinicar.ForeColor = Color.White;
-            btnReinicar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnReinicar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnReinicar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnSolucion.FlatStyle = FlatStyle.Flat;
-            btnSolucion.FlatAppearance.BorderSize = 0;
-            btnSolucion.BackColor = btnBackColor;
-            btnSolucion.ForeColor = Color.White;
-            btnSolucion.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnSolucion.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnSolucion.FlatAppearance.MouseDownBackColor = btnMouseDown;
+        private void ConfigurarBoton(Button boton, Color backColor, Color mouseOver, Color mouseDown)
+        {
+            boton.FlatStyle = FlatStyle.Flat;
+            boton.FlatAppearance.BorderSize = 0;
+            boton.BackColor = backColor;
+            boton.ForeColor = Color.White;
+            boton.Font = new Font("Arial", 10, FontStyle.Bold);
+            boton.FlatAppearance.MouseOverBackColor = mouseOver;
+            boton.FlatAppearance.MouseDownBackColor = mouseDown;
         }
 
         private void CrearCuadricula()
@@ -288,14 +240,16 @@ namespace Proyecto
             {
                 for (int columna = 0; columna < SudokuSize; columna++)
                 {
-                    TextBox txt = new TextBox();
-                    txt.Tag = new Point(fila, columna);
-                    txt.Size = new Size(CellSize - cellPadding * 2, CellSize - cellPadding * 2);
-                    txt.Location = new Point(columna * CellSize + GridOffset + cellPadding,
-                                             fila * CellSize + GridOffset + cellPadding);
-                    txt.TextAlign = HorizontalAlignment.Center;
-                    txt.Font = new Font("Arial", 14, FontStyle.Bold);
-                    txt.MaxLength = 1;
+                    TextBox txt = new TextBox
+                    {
+                        Tag = new Point(fila, columna),
+                        Size = new Size(CellSize - cellPadding * 2, CellSize - cellPadding * 2),
+                        Location = new Point(columna * CellSize + GridOffset + cellPadding,
+                                             fila * CellSize + GridOffset + cellPadding),
+                        TextAlign = HorizontalAlignment.Center,
+                        Font = new Font("Arial", 14, FontStyle.Bold),
+                        MaxLength = 1
+                    };
                     txt.KeyDown += TextBox_KeyDown;
                     _textBoxes[fila, columna] = txt;
                     this.Controls.Add(txt);
@@ -365,7 +319,6 @@ namespace Proyecto
                     changedTxt.ForeColor = Color.DarkBlue;
                 }
 
-                // Comprueba si el sudoku está completo
                 bool isComplete = true;
                 for (int f = 0; f < SudokuSize; f++)
                 {
@@ -412,16 +365,14 @@ namespace Proyecto
                         txt.BackColor = Color.LightCoral;
                         ResaltarConflictos(fila, columna, numeroIngresado);
 
-                        // Problemas 10-11: Timer inicializado a null y posible desreferencia
-                        System.Threading.Timer? timer = null;
-                        timer = new System.Threading.Timer((obj) =>
+                        var timer = new System.Threading.Timer((obj) =>
                         {
                             txt.Invoke(new Action(() =>
                             {
                                 if (!txt.ReadOnly) txt.BackColor = Color.White;
                                 RestaurarColoresConflicto();
                             }));
-                            timer?.Dispose();
+                            ((System.Threading.Timer?)obj)?.Dispose();
                         }, null, 200, System.Threading.Timeout.Infinite);
                     }
                 }
@@ -476,11 +427,11 @@ namespace Proyecto
             _cronometro = new Stopwatch();
             _cronometro.Start();
             timer1.Interval = 1000;
-            timer1.Tick += timer1_Tick;
+            timer1.Tick += Timer1_Tick;
             timer1.Start();
         }
 
-        private void timer1_Tick(object? sender, EventArgs e)
+        private void Timer1_Tick(object? sender, EventArgs e)
         {
             Tiempo();
             if (_cronometro.Elapsed >= TimeSpan.FromMinutes(3))
@@ -672,7 +623,7 @@ namespace Proyecto
             }
         }
 
-        private void NivelMedio_Paint(object sender, PaintEventArgs e)
+        private void NivelMedio_Paint(object? sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             using (Pen penThick = new Pen(Color.FromArgb(50, 50, 50), 3))
@@ -701,7 +652,6 @@ namespace Proyecto
             }
         }
 
-
         private void TextBox_KeyDown(object? sender, KeyEventArgs e)
         {
             if (sender is TextBox txt && txt.Tag is Point pos)
@@ -729,14 +679,6 @@ namespace Proyecto
                 }
             }
         }
-        private void Timer1_Tick(object sender, EventArgs e)
-        {
-            Tiempo();
-            if (_cronometro.Elapsed >= TimeSpan.FromMinutes(3))
-            {
-                PerderTiempo();
-            }
-        }
 
         private void PerderTiempo()
         {
@@ -745,28 +687,29 @@ namespace Proyecto
             _partidasPerdidas++;
             LblpartidasP.Text = $"Partidas Perdidas: {_partidasPerdidas}";
             MessageBox.Show("Se ha agotado el tiempo. Esta partida se contará como perdida.",
-                "Tiempo Agotado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            "Tiempo Agotado", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-    }
+    } 
 }
 /* Copyright (C) 2025 
- 
-             - Esmeralda Janeth Hernández Alfaro
-             - Rosa Hayde Durón Brito
-             - Ángel Roberto Chinchilla Erazo
-             - Kennet Hernández Valle
-             - Selvin Omar Castañeda
-             - Ricardo Jose Pinto Mejia
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+     - Esmeralda Janeth Hernández Alfaro
+     - Rosa Hayde Durón Brito
+     - Ángel Roberto Chinchilla Erazo
+     - Kennet Hernández Valle
+     - Selvin Omar Castañeda
+     - Ricardo Jose Pinto Mejia
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.*/
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
