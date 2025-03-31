@@ -7,56 +7,68 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
     strategy:
       matrix:
-        configuration: [Debug, Release]
-
+        configuration: [ Debug, Release ]
     runs-on: windows-latest
 
     env:
-      Solution_Name: Proyecto.sln
-      Test_Project_Path: Proyecto.csproj 
+      SOLUTION_NAME: Proyecto.sln 
+      TEST_PROJECT_PATH: Proyecto.csproj 
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v2
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}
 
-    - name: Execute unit tests
-      run: dotnet test $env:Test_Project_Path
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+      - name: Locate MSBuild.exe
+        id: msbuild-locate
+        shell: pwsh
+        run: |
+          $msbuild = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+          if ([string]::IsNullOrEmpty($msbuild)) {
+              Write-Error "MSBuild.exe not found"
+              exit 1
+          }
+          echo "msbuild_path=$msbuild" >> $env:GITHUB_OUTPUT
 
-    - name: Build the application using .NET Framework MSBuild
-      run: |
-        & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $env:Solution_Name /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
-      
-    - name: Publish the application using .NET Framework MSBuild
-      run: |
-        cd $(dirname $env:Solution_Name)
-        & "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $env:Solution_Name /t:Publish /p:Configuration=$env:Configuration /p:OutputPath=${{ github.workspace }}/artifacts
-      env:
-        Configuration: ${{ matrix.configuration }}
+      - name: Execute Unit Tests
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }}
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: Build Artifacts ${{ matrix.configuration }}
-        path: ${{ github.workspace }}/artifacts
+      - name: Restore the Application
+        run: msbuild ${{ env.SOLUTION_NAME }} /t:Restore /p:Configuration=${{ matrix.configuration }}
+
+      - name: Build the Application using MSBuild
+        run: |
+          & ${{ steps.msbuild-locate.outputs.msbuild_path }} ${{ env.SOLUTION_NAME }} /p:Configuration=${{ matrix.configuration }}
+
+      - name: Publish the Application using MSBuild
+        shell: pwsh
+        run: |
+          $solutionDir = Split-Path -Parent $env:SOLUTION_NAME
+          Set-Location $solutionDir
+          & ${{ steps.msbuild-locate.outputs.msbuild_path }} $env:SOLUTION_NAME /t:Publish /p:Configuration=${{ matrix.configuration }} /p:OutputPath="${{ github.workspace }}\artifacts"
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build Artifacts ${{ matrix.configuration }}
+          path: ${{ github.workspace }}\artifacts
