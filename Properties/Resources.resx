@@ -121,8 +121,14 @@
   <data name="WhatsApp Image 2025-03-21 at 20.41.06_62e691ce" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\WhatsApp Image 2025-03-21 at 20.41.06_62e691ce.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="the universe brain GIF by Percolate Galactic" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\the universe brain GIF by Percolate Galactic.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Creadores" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Creadores.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Crea2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Crea2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="6ac8b220-f073-4f10-8772-d9d355af11ed" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\6ac8b220-f073-4f10-8772-d9d355af11ed.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -184,6 +190,9 @@
   <data name="Crea" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Crea.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Letras" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Letras.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Pausar" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pausar.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -205,7 +214,10 @@
   <data name="Crea1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Crea1.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Crea2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Crea2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Happy I Love You GIF" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Happy I Love You GIF.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Happy Lets Go GIF by Holler Studios" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Happy Lets Go GIF by Holler Studios.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

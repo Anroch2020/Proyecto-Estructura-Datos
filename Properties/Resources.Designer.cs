@@ -193,6 +193,36 @@ namespace Proyecto.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Happy_I_Love_You_GIF {
+            get {
+                object obj = ResourceManager.GetObject("Happy I Love You GIF", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Happy_Lets_Go_GIF_by_Holler_Studios {
+            get {
+                object obj = ResourceManager.GetObject("Happy Lets Go GIF by Holler Studios", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Letras {
+            get {
+                object obj = ResourceManager.GetObject("Letras", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap medio {
             get {
                 object obj = ResourceManager.GetObject("medio", resourceCulture);
@@ -316,6 +346,16 @@ namespace Proyecto.Properties {
         internal static System.Drawing.Bitmap solucioj {
             get {
                 object obj = ResourceManager.GetObject("solucioj", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap the_universe_brain_GIF_by_Percolate_Galactic {
+            get {
+                object obj = ResourceManager.GetObject("the universe brain GIF by Percolate Galactic", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
