@@ -38,6 +38,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\ambient-easy.wav" />
+    <Content Include="icono-sudoku.ico" />
+    <EmbeddedResource Include="Resources\ambient-menu.wav" />
+  </ItemGroup>
+
+  <!-- Add the Microsoft.Windows.Compatibility package for COM interop -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <COMReference Include="WMPLib">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -55,7 +65,5 @@
       <Lcid>0</Lcid>
       <Isolated>false</Isolated>
     </COMReference>
-    <Content Include="icono-sudoku.ico" />
-    <EmbeddedResource Include="Resources\ambient-menu.wav" />
   </ItemGroup>
 </Project>
