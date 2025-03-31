@@ -174,7 +174,7 @@ namespace Proyecto
             Button btnMusica = new Button
             {
                 Text = "🔊",
-                Size = new Size(30, 30),
+                Size = new Size(40, 40),
                 Location = new Point(this.ClientSize.Width - 40, 10)
             };
 
@@ -720,6 +720,11 @@ namespace Proyecto
             btnSolucion.Font = new Font("Arial", 10, FontStyle.Bold);
             btnSolucion.FlatAppearance.MouseOverBackColor = btnMouseOver;
             btnSolucion.FlatAppearance.MouseDownBackColor = btnMouseDown;
+        }
+
+        private void LblpartidasP_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

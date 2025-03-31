@@ -169,7 +169,7 @@ namespace Proyecto
             Button btnMusica = new Button
             {
                 Text = "🔊",
-                Size = new Size(30, 30),
+                Size = new Size(40, 40),
                 Location = new Point(this.ClientSize.Width - 40, 10)
             };
             btnMusica.Click += (sender, e) =>

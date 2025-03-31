@@ -32,42 +32,28 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Iniciando));
             progressBar1 = new ProgressBar();
             BtnPlay = new Button();
-            pictureBox1 = new PictureBox();
             timer1 = new System.Windows.Forms.Timer(components);
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // progressBar1
             // 
-            progressBar1.Location = new Point(136, 321);
-            progressBar1.Margin = new Padding(3, 4, 3, 4);
+            progressBar1.Location = new Point(62, 343);
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(165, 31);
+            progressBar1.Size = new Size(282, 23);
             progressBar1.TabIndex = 5;
             progressBar1.Visible = false;
             // 
             // BtnPlay
             // 
-            BtnPlay.BackgroundImage = (Image)resources.GetObject("BtnPlay.BackgroundImage");
+            BtnPlay.BackColor = Color.Fuchsia;
+            BtnPlay.BackgroundImage = Properties.Resources._6ac8b220_f073_4f10_8772_d9d355af11ed;
             BtnPlay.BackgroundImageLayout = ImageLayout.Stretch;
-            BtnPlay.Location = new Point(189, 273);
-            BtnPlay.Margin = new Padding(3, 4, 3, 4);
+            BtnPlay.Location = new Point(103, 229);
             BtnPlay.Name = "BtnPlay";
-            BtnPlay.Size = new Size(55, 40);
+            BtnPlay.Size = new Size(211, 95);
             BtnPlay.TabIndex = 4;
-            BtnPlay.UseVisualStyleBackColor = true;
+            BtnPlay.UseVisualStyleBackColor = false;
             BtnPlay.Click += BtnPlay_Click;
-            // 
-            // pictureBox1
-            // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(117, 92);
-            pictureBox1.Margin = new Padding(3, 4, 3, 4);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(197, 173);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.TabIndex = 3;
-            pictureBox1.TabStop = false;
             // 
             // timer1
             // 
@@ -75,19 +61,19 @@
             // 
             // Iniciando
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ActiveCaption;
-            ClientSize = new Size(457, 529);
+            BackColor = Color.White;
+            BackgroundImage = Properties.Resources.NM2;
+            BackgroundImageLayout = ImageLayout.Stretch;
+            ClientSize = new Size(416, 406);
             Controls.Add(progressBar1);
             Controls.Add(BtnPlay);
-            Controls.Add(pictureBox1);
+            DoubleBuffered = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(3, 4, 3, 4);
             Name = "Iniciando";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Iniciando";
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }
 
@@ -95,7 +81,6 @@
 
         private ProgressBar progressBar1;
         private Button BtnPlay;
-        private PictureBox pictureBox1;
         private System.Windows.Forms.Timer timer1;
     }
 }

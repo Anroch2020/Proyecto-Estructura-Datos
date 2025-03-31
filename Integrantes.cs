@@ -14,23 +14,18 @@ namespace Proyecto
     {
         public Integrantes()
         {
-            InitializeComponent();  
-            CargarIntegrantes();
+            InitializeComponent();
+
         }
 
-        private void CargarIntegrantes()
+        private void pictureBox4_Click(object sender, EventArgs e)
         {
-            rtbIntegrantes.Rtf = @"{\rtf1\ansi
-          \b Catedrático: \b0 Ing. Arnold Roberto Hernández\par
-          \par
-          \b Integrantes:\b0\par
-             - Esmeralda Janeth Hernández Alfaro\par
-             - Rosa Hayde Durón Brito\par
-             - Ángel Roberto Chinchilla Erazo\par
-             - Kennet Hernández Valle\par
-             - Selvin Omar Castañeda\par
-             - Ricardo Jose Pinto Mejia\par
-          }";
+
+        }
+
+        private void pictureBox6_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
