@@ -36,35 +36,34 @@
             // LblSudoku
             // 
             LblSudoku.AutoSize = true;
-            LblSudoku.Font = new Font("Arial Rounded MT Bold", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            LblSudoku.Location = new Point(157, 28);
+            LblSudoku.Font = new Font("Baskerville Old Face", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LblSudoku.Location = new Point(126, 28);
             LblSudoku.Name = "LblSudoku";
-            LblSudoku.Size = new Size(249, 32);
+            LblSudoku.Size = new Size(293, 31);
             LblSudoku.TabIndex = 5;
-            LblSudoku.Text = "Reglas de Sudoku";
+            LblSudoku.Text = "Reglas Number Masters";
             // 
             // rtbReglas
             // 
-            rtbReglas.Location = new Point(29, 81);
-            rtbReglas.Margin = new Padding(3, 4, 3, 4);
+            rtbReglas.Location = new Point(57, 79);
             rtbReglas.Name = "rtbReglas";
-            rtbReglas.Size = new Size(485, 317);
+            rtbReglas.Size = new Size(437, 281);
             rtbReglas.TabIndex = 7;
             rtbReglas.Text = "";
             // 
             // ReglasDelJuego
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.PaleTurquoise;
-            ClientSize = new Size(538, 496);
+            BackgroundImage = Properties.Resources.Reglas;
+            ClientSize = new Size(557, 423);
             Controls.Add(rtbReglas);
             Controls.Add(LblSudoku);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(3, 4, 3, 4);
             Name = "ReglasDelJuego";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Reglas Del Juego";
+            Text = "Reglas";
             ResumeLayout(false);
             PerformLayout();
         }
