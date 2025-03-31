@@ -15,7 +15,7 @@ jobs:
 
     env:
       SOLUTION_NAME: Proyecto.sln         # Replace with your solution name
-      TEST_PROJECT_PATH: Proyecto.csproj  # Replace with the path to your test project
+      TEST_PROJECT_PATH: Proyecto.csproj   # Replace with the path to your test project
 
     steps:
       - name: Checkout
@@ -61,16 +61,18 @@ jobs:
         run: |
           $msbuildPath = "${{ steps.msbuild-locate.outputs.msbuild_path }}"
           Write-Host "Using MSBuild: $msbuildPath"
-          & $msbuildPath $env:SOLUTION_NAME /p:Configuration=${{ matrix.configuration }}
+          $solutionFullPath = Join-Path $env:GITHUB_WORKSPACE $env.SOLUTION_NAME
+          Write-Host "Building solution: $solutionFullPath"
+          & $msbuildPath $solutionFullPath /p:Configuration=${{ matrix.configuration }}
 
       - name: Publish the Application using MSBuild
         shell: pwsh
         run: |
           $msbuildPath = "${{ steps.msbuild-locate.outputs.msbuild_path }}"
-          $solutionDir = Split-Path -Parent $env:SOLUTION_NAME
-          Set-Location $solutionDir
+          $solutionFullPath = Join-Path $env:GITHUB_WORKSPACE $env.SOLUTION_NAME
           Write-Host "Publishing using MSBuild: $msbuildPath"
-          & $msbuildPath $env:SOLUTION_NAME /t:Publish /p:Configuration=${{ matrix.configuration }} /p:OutputPath="${{ github.workspace }}\artifacts"
+          Write-Host "Publishing solution: $solutionFullPath"
+          & $msbuildPath $solutionFullPath /t:Publish /p:Configuration=${{ matrix.configuration }} /p:OutputPath="${{ github.workspace }}\artifacts"
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
