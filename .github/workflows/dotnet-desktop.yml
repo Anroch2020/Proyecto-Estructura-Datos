@@ -17,8 +17,8 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: Proyecto.sln  # Replace with your solution name
-      Test_Project_Path: Proyecto.csproj  # Replace with the path to your test project
+      Solution_Name: Proyecto.sln
+      Test_Project_Path: Proyecto.csproj
 
     steps:
     - name: Checkout
@@ -42,15 +42,16 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    - name: Build the application
-      run: msbuild $env:Solution_Name /p:Configuration=${{ matrix.configuration }}
+    - name: Build the application using .NET Framework MSBuild
+      run: |
+        "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $env:Solution_Name /p:Configuration=${{ matrix.configuration }}
       env:
         Configuration: ${{ matrix.configuration }}
       
-    - name: Publish the application
+    - name: Publish the application using .NET Framework MSBuild
       run: |
         cd $(dirname $env:Solution_Name)
-        dotnet publish -c ${{ matrix.configuration }} -o ${{ github.workspace }}/artifacts
+        "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" $env:Solution_Name /t:Publish /p:Configuration=${{ matrix.configuration }} /p:OutputPath=${{ github.workspace }}/artifacts
       env:
         Configuration: ${{ matrix.configuration }}
 
