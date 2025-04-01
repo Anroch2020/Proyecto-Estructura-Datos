@@ -2,8 +2,6 @@
 
 ## Descripción
 Esta aplicación de Windows Forms implementa el clásico juego de Sudoku, desarrollado como proyecto académico. La aplicación permite a los usuarios jugar Sudoku siguiendo las reglas estándar en una interfaz gráfica intuitiva.
-![Screenshot 2025-04-01 003039](https://github.com/user-attachments/assets/e9ee321e-60f1-4d06-b770-aa8312296e42)
-![Screenshot 2025-04-01 003051](https://github.com/user-attachments/assets/23c18f59-f477-46d0-a359-b313a7a30686)
 
 ## Características
 - Tablero de juego Sudoku 9x9
@@ -25,6 +23,9 @@ Esta aplicación de Windows Forms implementa el clásico juego de Sudoku, desarr
 1. Clone el repositorio
 2. Abra la solución en Visual Studio 2022
 3. Compile y ejecute la aplicación
+
+## Capturas
+![Screenshot 2025-04-01 003039](https://github.com/user-attachments/assets/e9ee321e-60f1-4d06-b770-aa8312296e42)
 
 ## Autores
 - Esmeralda Janeth Hernández Alfaro
