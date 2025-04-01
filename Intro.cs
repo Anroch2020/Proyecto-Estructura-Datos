@@ -1,117 +1,199 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Media;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Proyecto.Utilities;
 
 namespace Proyecto
 {
     public partial class Intro : Form
     {
         // Sistema de audio
-        private SoundPlayer? _musicaAmbiental;
-        private Stream? _streamMusica;  // Mantener una referencia al stream
+        private AudioManager? _audioManager;
         private bool _musicaActiva = true;
-        private Button? _btnMusica;
 
-        private Button btnEasy, btnMedium, btnHard, btnRules, btnCreators;
-        private System.Windows.Forms.Timer animationTimer;
-        private Button? currentButton;
-        private bool zoomIn;
+        // Constantes para la animación de botones
         private const int ZoomStep = 2;
         private const int MaxZoom = 10;
+        private const int ButtonWidth = 300;
+        private const int ButtonHeight = 60;
+
+        // Componentes de interfaz
+        private Button? _btnMusica;
+        private Button? _currentButton;
+        private System.Windows.Forms.Timer _animationTimer;
+        private bool _zoomIn;
 
         public Intro()
         {
             InitializeComponent();
-            InitializeButtons();
-            InitializeAnimationTimer();
+            ConfigurarFormulario();
+            InicializarComponentes();
             InicializarMusicaAmbiental();
-            btnEasy = new Button();
-            btnMedium = new Button();
-            btnHard = new Button();
-            btnRules = new Button();
-            btnCreators = new Button();
-            animationTimer = new System.Windows.Forms.Timer();
         }
 
+        private void ConfigurarFormulario()
+        {
+            this.Text = "Sudoku - Selecciona la dificultad";
+            this.Size = new Size(400, 700);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormClosed += (s, e) => Application.Exit();
+        }
+
+        private void InicializarComponentes()
+        {
+            CrearPaneles();
+            ConfigurarAnimacion();
+        }
+
+        private void CrearPaneles()
+        {
+            // Panel principal con título y botones
+            TableLayoutPanel mainPanel = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.Transparent,
+                ColumnCount = 1,
+                RowCount = 2
+            };
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            this.Controls.Add(mainPanel);
+
+            // Título del juego
+            Label lblTitle = new Label
+            {
+                Text = "NumberMaster",
+                Font = new Font("Arial", 36, FontStyle.Bold),
+                ForeColor = Color.Black,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Fill
+            };
+            mainPanel.Controls.Add(lblTitle, 0, 0);
+
+            // Panel para los botones
+            TableLayoutPanel buttonPanel = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 5
+            };
+
+            // Configurar filas para que sean iguales
+            for (int i = 0; i < 5; i++)
+            {
+                buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
+            }
+
+            mainPanel.Controls.Add(buttonPanel, 0, 1);
+
+            // Crear botones de menú
+            var buttonConfig = new (string Text, Color Color, EventHandler ClickHandler)[]
+            {
+                ("Facil", Color.LightGreen, new EventHandler(btnEasy_Click)),
+                ("Medio", Color.Goldenrod, new EventHandler(btnMedium_Click)),
+                ("Dificil", Color.IndianRed, new EventHandler(btnHard_Click)),
+                ("Reglas", Color.SkyBlue, new EventHandler(btnRules_Click)),
+                ("Creadores", Color.MediumPurple, new EventHandler(btnCreators_Click))
+            };
+
+            // Agregar botones al panel
+            for (int i = 0; i < buttonConfig.Length; i++)
+            {
+                var (text, color, handler) = buttonConfig[i];
+                Button btn = CrearBoton(text, color, handler);
+                buttonPanel.Controls.Add(btn, 0, i);
+            }
+        }
+
+        private Button CrearBoton(string texto, Color color, EventHandler clickHandler)
+        {
+            Button button = new Button
+            {
+                Text = texto,
+                Font = new Font("Verdana", 20, FontStyle.Regular),
+                BackColor = color,
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(ButtonWidth, ButtonHeight),
+                Anchor = AnchorStyles.None
+            };
+            button.FlatAppearance.BorderSize = 0;
+            button.Click += clickHandler;
+            button.MouseEnter += Button_MouseEnter;
+            button.MouseLeave += Button_MouseLeave;
+            return button;
+        }
+
+        private void ConfigurarAnimacion()
+        {
+            _animationTimer = new System.Windows.Forms.Timer
+            {
+                Interval = 15
+            };
+            _animationTimer.Tick += AnimationTimer_Tick;
+        }
+
+        private void Button_MouseEnter(object? sender, EventArgs e)
+        {
+            _currentButton = sender as Button;
+            _zoomIn = true;
+            _animationTimer.Start();
+        }
+
+        private void Button_MouseLeave(object? sender, EventArgs e)
+        {
+            _currentButton = sender as Button;
+            _zoomIn = false;
+            _animationTimer.Start();
+        }
+
+        private void AnimationTimer_Tick(object? sender, EventArgs e)
+        {
+            if (_currentButton == null) return;
+
+            if (_zoomIn)
+            {
+                if (_currentButton.Width < ButtonWidth + MaxZoom && _currentButton.Height < ButtonHeight + MaxZoom)
+                {
+                    _currentButton.Width += ZoomStep;
+                    _currentButton.Height += ZoomStep;
+                }
+                else
+                {
+                    _animationTimer.Stop();
+                }
+            }
+            else
+            {
+                if (_currentButton.Width > ButtonWidth && _currentButton.Height > ButtonHeight)
+                {
+                    _currentButton.Width -= ZoomStep;
+                    _currentButton.Height -= ZoomStep;
+                }
+                else
+                {
+                    _animationTimer.Stop();
+                }
+            }
+        }
+
+        #region Gestión de Audio
         private void InicializarMusicaAmbiental()
         {
             try
             {
-                LimpiarRecursosAudio();
-
-                // Listar los recursos disponibles para depuración
-                var assembly = Assembly.GetExecutingAssembly();
-                Debug.WriteLine("Recursos disponibles en el menú:");
-                foreach (var resourceName in assembly.GetManifestResourceNames())
-                {
-                    Debug.WriteLine($" - {resourceName}");
-                }
-
-                // Intentar cargar desde un recurso incrustado
-                _streamMusica = assembly.GetManifestResourceStream("Proyecto.Resources.ambient-menu.wav");
-                if (_streamMusica != null)
-                {
-                    Debug.WriteLine("Menú: Cargando música desde recurso incrustado");
-                    _musicaAmbiental = new SoundPlayer(_streamMusica);
-                    _musicaAmbiental.PlayLooping();
-                    AgregarControlMusica();
-                    return;
-                }
-
-                // Si no se encuentra como recurso incrustado, intentar con las rutas de archivo
-                string? rutaMusica = null;
-
-                // Depuración para ver dónde está buscando
-                Debug.WriteLine($"Menú: Ruta base: {Application.StartupPath}");
-
-                // Intentar varias rutas posibles
-                string[] posiblesRutas = new string[]
-                {
-                    Path.Combine(Application.StartupPath, "Resources", "ambient-menu.wav"),
-                    Path.Combine(Application.StartupPath, "ambient-menu.wav"),
-                    Path.Combine(Application.StartupPath, "..", "..", "Resources", "ambient-menu.wav"),
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "ambient-menu.wav")
-                };
-
-                // Mostrar todas las rutas para depuración
-                foreach (var ruta in posiblesRutas)
-                {
-                    Debug.WriteLine($"Menú: Intentando: {ruta} - Existe: {File.Exists(ruta)}");
-                    if (File.Exists(ruta))
-                    {
-                        rutaMusica = ruta;
-                        break;
-                    }
-                }
-
-                if (rutaMusica == null)
-                {
-                    Debug.WriteLine("Menú: No se pudo encontrar ningún archivo de audio");
-                    return;
-                }
-
-                Debug.WriteLine($"Menú: Reproduciendo música desde archivo: {rutaMusica}");
-                _musicaAmbiental = new SoundPlayer(rutaMusica);
-                _musicaAmbiental.PlayLooping(); // Reproducir en bucle
-                Debug.WriteLine("Menú: Reproducción iniciada correctamente");
-
-                // Agregar un botón para controlar el volumen
+                _audioManager?.Dispose();
+                _audioManager = new AudioManager("ambient-menu.wav");
+                _audioManager.PlayLooping();
+                _musicaActiva = true;
                 AgregarControlMusica();
+                Debug.WriteLine("Menú: Música ambiental inicializada correctamente");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Menú: Error al cargar la música ambiental: {ex.Message}");
-                Debug.WriteLine($"Menú: Stack trace: {ex.StackTrace}");
             }
         }
 
@@ -119,7 +201,6 @@ namespace Proyecto
         {
             if (_btnMusica != null && this.Controls.Contains(_btnMusica))
             {
-                Debug.WriteLine("Menú: Botón de música ya existe, actualizando");
                 _btnMusica.Text = _musicaActiva ? "🔊" : "🔇";
                 return;
             }
@@ -135,345 +216,142 @@ namespace Proyecto
             _btnMusica.FlatAppearance.BorderSize = 0;
             _btnMusica.Click += (sender, e) => ToggleMusicaAmbiental();
             this.Controls.Add(_btnMusica);
-            Debug.WriteLine("Menú: Botón de música agregado");
         }
 
         private void ToggleMusicaAmbiental()
         {
-            _musicaActiva = !_musicaActiva;
-            if (_musicaActiva)
+            if (_audioManager != null)
             {
-                _musicaAmbiental?.PlayLooping();
-                if (_btnMusica != null) _btnMusica.Text = "🔊";
-            }
-            else
-            {
-                _musicaAmbiental?.Stop();
-                if (_btnMusica != null) _btnMusica.Text = "🔇";
+                _audioManager.Toggle();
+                _musicaActiva = _audioManager.IsPlaying;
+                if (_btnMusica != null)
+                {
+                    _btnMusica.Text = _musicaActiva ? "🔊" : "🔇";
+                }
             }
         }
+        #endregion
 
-        private void DetenerMusica()
+        #region Navegación entre Formularios
+        private void AbrirFormulario<T>(string mensaje) where T : Form, new()
         {
-            _musicaAmbiental?.Stop();
+            Debug.WriteLine($"Menú: Abriendo {typeof(T).Name}");
+            MessageBox.Show(mensaje);
+
+            // Detener y liberar música
+            _audioManager?.Stop();
+            _audioManager?.Dispose();
+            _audioManager = null;
+
+            // Crear y mostrar nuevo formulario
+            T formulario = new T();
+            formulario.FormClosed += (s, args) => RegresarAlMenu();
+            formulario.Show();
+            this.Hide();
+        }
+
+        private void RegresarAlMenu()
+        {
+            Debug.WriteLine("Menú: Regresando al menú principal");
+            this.Show();
+
+            // Reanudar música después de un breve retraso
+            Task.Delay(100).ContinueWith(t =>
+            {
+                if (this.IsDisposed) return;
+                this.BeginInvoke(new Action(() =>
+                {
+                    if (this.Visible && _musicaActiva)
+                    {
+                        ReanudarMusica();
+                    }
+                }));
+            });
         }
 
         private void ReanudarMusica()
         {
-            Debug.WriteLine("Menú: Intentando reanudar música");
-
-            if (_musicaAmbiental == null)
+            if (_audioManager == null)
             {
-                Debug.WriteLine("Menú: Reproductor nulo, reinicializando música");
                 InicializarMusicaAmbiental();
                 return;
             }
 
             if (_musicaActiva)
             {
-                Debug.WriteLine("Menú: Reanudando música");
                 try
                 {
-                    _musicaAmbiental.PlayLooping();
-                    Debug.WriteLine("Menú: Música reanudada correctamente");
+                    _audioManager.PlayLooping();
                 }
-                catch (Exception ex)
+                catch
                 {
-                    Debug.WriteLine($"Menú: Error al reanudar música: {ex.Message}");
                     InicializarMusicaAmbiental();
                 }
             }
         }
+        #endregion
 
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            Debug.WriteLine("Menú: Cerrando formulario, liberando recursos");
-            LimpiarRecursosAudio();
-            base.OnFormClosing(e);
-        }
-
-        private void InitializeButtons()
-        {
-            this.Text = "Sudoku - Selecciona la dificultad";
-            this.Size = new Size(400, 700);
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            this.FormClosed += (s, e) => Application.Exit();
-
-            TableLayoutPanel mainTlp = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.Transparent,
-                ColumnCount = 1,
-                RowCount = 2
-            };
-            mainTlp.RowStyles.Add(new RowStyle(SizeType.Absolute, 100));
-            mainTlp.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            this.Controls.Add(mainTlp);
-
-            Label lblTitle = new Label
-            {
-                Text = "NumberMaster",
-                Font = new Font("Arial", 36, FontStyle.Bold),
-                ForeColor = Color.Black,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Fill
-            };
-            mainTlp.Controls.Add(lblTitle, 0, 0);
-
-            TableLayoutPanel buttonsTlp = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 1,
-                RowCount = 5
-            };
-            buttonsTlp.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            buttonsTlp.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            buttonsTlp.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            buttonsTlp.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            buttonsTlp.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            mainTlp.Controls.Add(buttonsTlp, 0, 1);
-
-            int buttonWidth = 300;
-            int buttonHeight = 60;
-            Font buttonFont = new Font("Verdana", 20, FontStyle.Regular);
-            FlatStyle flatStyle = FlatStyle.Flat;
-
-            btnEasy = CreateButton("Facil", buttonFont, Color.LightGreen, buttonWidth, buttonHeight, flatStyle, btnEasy_Click);
-            buttonsTlp.Controls.Add(btnEasy, 0, 0);
-
-            btnMedium = CreateButton("Medio", buttonFont, Color.Goldenrod, buttonWidth, buttonHeight, flatStyle, btnMedium_Click);
-            buttonsTlp.Controls.Add(btnMedium, 0, 1);
-
-            btnHard = CreateButton("Dificil", buttonFont, Color.IndianRed, buttonWidth, buttonHeight, flatStyle, btnHard_Click);
-            buttonsTlp.Controls.Add(btnHard, 0, 2);
-
-            btnRules = CreateButton("Reglas", buttonFont, Color.SkyBlue, buttonWidth, buttonHeight, flatStyle, btnRules_Click);
-            buttonsTlp.Controls.Add(btnRules, 0, 3);
-
-            btnCreators = CreateButton("Creadores", buttonFont, Color.MediumPurple, buttonWidth, buttonHeight, flatStyle, btnCreators_Click);
-            buttonsTlp.Controls.Add(btnCreators, 0, 4);
-        }
-
-        private Button CreateButton(string text, Font font, Color backColor, int width, int height, FlatStyle flatStyle, EventHandler clickHandler)
-        {
-            Button button = new Button
-            {
-                Text = text,
-                Font = font,
-                BackColor = backColor,
-                ForeColor = Color.White,
-                FlatStyle = flatStyle,
-                Size = new Size(width, height),
-                Anchor = AnchorStyles.None
-            };
-            button.FlatAppearance.BorderSize = 0;
-            button.Click += clickHandler;
-            button.MouseEnter += Button_MouseEnter;
-            button.MouseLeave += Button_MouseLeave;
-            return button;
-        }
-
-        private void InitializeAnimationTimer()
-        {
-            animationTimer = new System.Windows.Forms.Timer
-            {
-                Interval = 15
-            };
-            animationTimer.Tick += AnimationTimer_Tick;
-        }
-
-        private void Button_MouseEnter(object? sender, EventArgs e)
-        {
-            currentButton = sender as Button;
-            zoomIn = true;
-            animationTimer.Start();
-        }
-
-        private void Button_MouseLeave(object? sender, EventArgs e)
-        {
-            currentButton = sender as Button;
-            zoomIn = false;
-            animationTimer.Start();
-        }
-
-        private void AnimationTimer_Tick(object? sender, EventArgs e)
-        {
-            if (currentButton != null)
-            {
-                if (zoomIn)
-                {
-                    if (currentButton.Width < 300 + MaxZoom && currentButton.Height < 60 + MaxZoom)
-                    {
-                        currentButton.Width += ZoomStep;
-                        currentButton.Height += ZoomStep;
-                    }
-                    else
-                    {
-                        animationTimer.Stop();
-                    }
-                }
-                else
-                {
-                    if (currentButton.Width > 300 && currentButton.Height > 60)
-                    {
-                        currentButton.Width -= ZoomStep;
-                        currentButton.Height -= ZoomStep;
-                    }
-                    else
-                    {
-                        animationTimer.Stop();
-                    }
-                }
-            }
-        }
-
+        #region Eventos de Botones
         private void btnEasy_Click(object? sender, EventArgs e)
         {
-            Debug.WriteLine("Menú: Click en nivel fácil");
-            MessageBox.Show("Nivel Facil Seleccionado!");
-
-            DetenerMusica();
-            LimpiarRecursosAudio();
-
-            FormNivelFacil nivelFacilForm = new FormNivelFacil();
-            nivelFacilForm.FormClosed += (s, args) =>
-            {
-                Debug.WriteLine("Menú: Formulario fácil cerrado");
-                this.Show();
-                Task.Delay(100).ContinueWith(t =>
-                {
-                    this.BeginInvoke(new Action(() =>
-                    {
-                        ReanudarMusica();
-                    }));
-                });
-            };
-
-            nivelFacilForm.Show();
-            this.Hide();
+            AbrirFormulario<FormNivelFacil>("Nivel Facil Seleccionado!");
         }
 
         private void btnMedium_Click(object? sender, EventArgs e)
         {
-            Debug.WriteLine("Menú: Click en nivel medio");
-            MessageBox.Show("Nivel Medio seleccionado!");
-
-            DetenerMusica();
-            LimpiarRecursosAudio();
-
-            NivelMedio nivelMedioForm = new NivelMedio();
-            nivelMedioForm.FormClosed += (s, args) =>
-            {
-                Debug.WriteLine("Menú: Formulario medio cerrado");
-                this.Show();
-                Task.Delay(100).ContinueWith(t =>
-                {
-                    this.BeginInvoke(new Action(() =>
-                    {
-                        ReanudarMusica();
-                    }));
-                });
-            };
-
-            nivelMedioForm.Show();
-            this.Hide();
+            AbrirFormulario<NivelMedio>("Nivel Medio seleccionado!");
         }
 
         private void btnHard_Click(object? sender, EventArgs e)
         {
-            Debug.WriteLine("Menú: Click en nivel difícil");
-            MessageBox.Show("Nivel dificil seleccionado!");
-
-            DetenerMusica();
-            LimpiarRecursosAudio();
-
-            NivelDificil hardForm = new NivelDificil();
-            hardForm.FormClosed += (s, args) =>
-            {
-                Debug.WriteLine("Menú: Formulario difícil cerrado");
-                this.Show();
-                Task.Delay(100).ContinueWith(t =>
-                {
-                    this.BeginInvoke(new Action(() =>
-                    {
-                        ReanudarMusica();
-                    }));
-                });
-            };
-
-            hardForm.Show();
-            this.Hide();
+            AbrirFormulario<NivelDificil>("Nivel dificil seleccionado!");
         }
 
         private void btnRules_Click(object? sender, EventArgs e)
         {
-            ReglasDelJuego reglasDelJuego = new ReglasDelJuego();
-            reglasDelJuego.Show();
+            new ReglasDelJuego().Show();
         }
 
         private void btnCreators_Click(object? sender, EventArgs e)
         {
-            Integrantes integrantes = new Integrantes();
-            integrantes.Show();
+            new Integrantes().Show();
+        }
+        #endregion
+
+        #region Eventos del Formulario
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            _audioManager?.Dispose();
+            base.OnFormClosing(e);
         }
 
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
 
-            Debug.WriteLine($"Menú: Visibilidad cambiada. Visible: {this.Visible}, MusicaActiva: {_musicaActiva}");
-
             if (this.Visible)
             {
                 Task.Delay(300).ContinueWith(t =>
                 {
                     if (this.IsDisposed) return;
-
                     this.BeginInvoke(new Action(() =>
                     {
-                        if (this.Visible && _musicaActiva)
-                        {
-                            ReanudarMusica();
-                        }
+                        if (this.Visible && _musicaActiva) ReanudarMusica();
                     }));
                 });
             }
-            else if (!this.Visible)
+            else
             {
-                DetenerMusica();
-            }
-        }
-
-        private void LimpiarRecursosAudio()
-        {
-            if (_musicaAmbiental != null)
-            {
-                Debug.WriteLine("Menú: Deteniendo reproductor anterior");
-                _musicaAmbiental.Stop();
-                _musicaAmbiental.Dispose();
-                _musicaAmbiental = null;
-            }
-
-            if (_streamMusica != null)
-            {
-                Debug.WriteLine("Menú: Cerrando stream anterior");
-                _streamMusica.Dispose();
-                _streamMusica = null;
+                _audioManager?.Stop();
             }
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            Debug.WriteLine("Menú: Formulario mostrado");
-
-            if (_musicaAmbiental == null || _streamMusica == null)
-            {
-                Debug.WriteLine("Menú: Recursos de audio nulos al mostrar, reinicializando");
-                InicializarMusicaAmbiental();
-            }
+            if (_audioManager == null) InicializarMusicaAmbiental();
         }
+        #endregion
     }
 }
 /* Copyright (C) 2025 
