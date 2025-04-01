@@ -1,16 +1,18 @@
-# Proyecto# Proyecto Sudoku - AplicaciÛn de Windows Forms
+# Proyecto# Proyecto Sudoku - Aplicaci√≥n de Windows Forms
 
-## DescripciÛn
-Esta aplicaciÛn de Windows Forms implementa el cl·sico juego de Sudoku, desarrollado como proyecto acadÈmico. La aplicaciÛn permite a los usuarios jugar Sudoku siguiendo las reglas est·ndar en una interfaz gr·fica intuitiva.
+## Descripci√≥n
+Esta aplicaci√≥n de Windows Forms implementa el cl√°sico juego de Sudoku, desarrollado como proyecto acad√©mico. La aplicaci√≥n permite a los usuarios jugar Sudoku siguiendo las reglas est√°ndar en una interfaz gr√°fica intuitiva.
+![Screenshot 2025-04-01 003039](https://github.com/user-attachments/assets/e9ee321e-60f1-4d06-b770-aa8312296e42)
+![Screenshot 2025-04-01 003051](https://github.com/user-attachments/assets/23c18f59-f477-46d0-a359-b313a7a30686)
 
-## CaracterÌsticas
+## Caracter√≠sticas
 - Tablero de juego Sudoku 9x9
 - Interfaz de usuario amigable
-- ValidaciÛn de reglas de juego
+- Validaci√≥n de reglas de juego
 - Diferentes niveles de dificultad
-- InformaciÛn sobre las reglas del juego
+- Informaci√≥n sobre las reglas del juego
 
-## TecnologÌas
+## Tecnolog√≠as
 - C# 12.0
 - .NET 8.0
 - Windows Forms
@@ -19,18 +21,18 @@ Esta aplicaciÛn de Windows Forms implementa el cl·sico juego de Sudoku, desarrol
 - Windows 10/11
 - .NET 8.0 SDK o Runtime
 
-## InstalaciÛn
+## Instalaci√≥n
 1. Clone el repositorio
-2. Abra la soluciÛn en Visual Studio 2022
-3. Compile y ejecute la aplicaciÛn
+2. Abra la soluci√≥n en Visual Studio 2022
+3. Compile y ejecute la aplicaci√≥n
 
 ## Autores
-- Esmeralda Janeth Hern·ndez Alfaro
-- Rosa Hayde DurÛn Brito
-- ¡ngel Roberto Chinchilla Erazo
-- Kennet Hern·ndez Valle
-- Selvin Omar CastaÒeda
+- Esmeralda Janeth Hern√°ndez Alfaro
+- Rosa Hayde Dur√≥n Brito
+- √Ångel Roberto Chinchilla Erazo
+- Kennet Hern√°ndez Valle
+- Selvin Omar Casta√±eda
 - Ricardo Jose Pinto Mejia
 
 ## Licencia
-Este proyecto est· licenciado bajo GNU General Public License v3.0
+Este proyecto est√° licenciado bajo GNU General Public License v3.0
