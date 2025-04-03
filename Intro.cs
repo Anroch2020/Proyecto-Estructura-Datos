@@ -9,9 +9,7 @@ namespace Proyecto
 {
     public partial class Intro : Form
     {
-        // Sistema de audio
-        private AudioManager? _audioManager;
-        private bool _musicaActiva = true;
+        #region Constantes y campos estáticos
 
         // Constantes para la animación de botones
         private const int ZoomStep = 2;
@@ -19,20 +17,59 @@ namespace Proyecto
         private const int ButtonWidth = 300;
         private const int ButtonHeight = 60;
 
+        // Colores para los botones
+        private static readonly Color ColorMenuFacil = Color.LightGreen;
+        private static readonly Color ColorMenuMedio = Color.Goldenrod;
+        private static readonly Color ColorMenuDificil = Color.IndianRed;
+        private static readonly Color ColorMenuReglas = Color.SkyBlue;
+        private static readonly Color ColorMenuCreadores = Color.MediumPurple;
+        private static readonly Color ColorBotonMusica = Color.FromArgb(180, 211, 211, 255); // Celeste transparente
+
+        #endregion
+
+        #region Campos privados
+
+        // Sistema de audio
+        private AudioManager? _audioManager;
+        private bool _musicaActiva = true;
+
         // Componentes de interfaz
         private Button? _btnMusica;
         private Button? _currentButton;
-        private System.Windows.Forms.Timer _animationTimer;
+        private System.Windows.Forms.Timer? _animationTimer;
         private bool _zoomIn;
 
+        #endregion
+
+        #region Inicialización
+
+        /// <summary>
+        /// Constructor del formulario principal
+        /// </summary>
         public Intro()
         {
             InitializeComponent();
+
+            // Cancelar la disposición automática si el diseñador creó un timer
+            if (components != null && components.Components.Count > 0)
+            {
+                foreach (var component in components.Components)
+                {
+                    if (component is System.Windows.Forms.Timer timer)
+                    {
+                        timer.Dispose();
+                    }
+                }
+            }
+
             ConfigurarFormulario();
             InicializarComponentes();
             InicializarMusicaAmbiental();
         }
 
+        /// <summary>
+        /// Configura las propiedades básicas del formulario
+        /// </summary>
         private void ConfigurarFormulario()
         {
             this.Text = "Sudoku - Selecciona la dificultad";
@@ -41,12 +78,35 @@ namespace Proyecto
             this.FormClosed += (s, e) => Application.Exit();
         }
 
+        /// <summary>
+        /// Inicializa todos los componentes de interfaz
+        /// </summary>
         private void InicializarComponentes()
         {
             CrearPaneles();
             ConfigurarAnimacion();
         }
 
+        /// <summary>
+        /// Configura el timer de animación
+        /// </summary>
+        private void ConfigurarAnimacion()
+        {
+            // Crear un nuevo timer para evitar problemas con el Designer
+            _animationTimer = new System.Windows.Forms.Timer
+            {
+                Interval = 15
+            };
+            _animationTimer.Tick += AnimationTimer_Tick;
+        }
+
+        #endregion
+
+        #region Creación de interfaz
+
+        /// <summary>
+        /// Crea los paneles y botones de la interfaz principal
+        /// </summary>
         private void CrearPaneles()
         {
             // Panel principal con título y botones
@@ -88,17 +148,17 @@ namespace Proyecto
 
             mainPanel.Controls.Add(buttonPanel, 0, 1);
 
-            // Crear botones de menú
-            var buttonConfig = new (string Text, Color Color, EventHandler ClickHandler)[]
+            // Configuración de botones (texto, color, manejador de evento)
+            var buttonConfig = new[]
             {
-                ("Facil", Color.LightGreen, new EventHandler(btnEasy_Click)),
-                ("Medio", Color.Goldenrod, new EventHandler(btnMedium_Click)),
-                ("Dificil", Color.IndianRed, new EventHandler(btnHard_Click)),
-                ("Reglas", Color.SkyBlue, new EventHandler(btnRules_Click)),
-                ("Creadores", Color.MediumPurple, new EventHandler(btnCreators_Click))
+                (Text: "Facil", Color: ColorMenuFacil, Handler: new EventHandler(btnEasy_Click)),
+                (Text: "Medio", Color: ColorMenuMedio, Handler: new EventHandler(btnMedium_Click)),
+                (Text: "Dificil", Color: ColorMenuDificil, Handler: new EventHandler(btnHard_Click)),
+                (Text: "Reglas", Color: ColorMenuReglas, Handler: new EventHandler(btnRules_Click)),
+                (Text: "Creadores", Color: ColorMenuCreadores, Handler: new EventHandler(btnCreators_Click))
             };
 
-            // Agregar botones al panel
+            // Crear y agregar botones al panel
             for (int i = 0; i < buttonConfig.Length; i++)
             {
                 var (text, color, handler) = buttonConfig[i];
@@ -107,6 +167,9 @@ namespace Proyecto
             }
         }
 
+        /// <summary>
+        /// Crea un botón con estilos y eventos estándar
+        /// </summary>
         private Button CrearBoton(string texto, Color color, EventHandler clickHandler)
         {
             Button button = new Button
@@ -126,29 +189,39 @@ namespace Proyecto
             return button;
         }
 
-        private void ConfigurarAnimacion()
-        {
-            _animationTimer = new System.Windows.Forms.Timer
-            {
-                Interval = 15
-            };
-            _animationTimer.Tick += AnimationTimer_Tick;
-        }
+        #endregion
 
+        #region Animación de botones
+
+        /// <summary>
+        /// Maneja el evento de entrada del ratón en un botón
+        /// </summary>
         private void Button_MouseEnter(object? sender, EventArgs e)
         {
-            _currentButton = sender as Button;
+            if (sender is not Button btn)
+                return;
+
+            _currentButton = btn;
             _zoomIn = true;
-            _animationTimer.Start();
+            _animationTimer?.Start();
         }
 
+        /// <summary>
+        /// Maneja el evento de salida del ratón de un botón
+        /// </summary>
         private void Button_MouseLeave(object? sender, EventArgs e)
         {
-            _currentButton = sender as Button;
+            if (sender is not Button btn)
+                return;
+
+            _currentButton = btn;
             _zoomIn = false;
-            _animationTimer.Start();
+            _animationTimer?.Start();
         }
 
+        /// <summary>
+        /// Gestiona la animación de zoom de los botones
+        /// </summary>
         private void AnimationTimer_Tick(object? sender, EventArgs e)
         {
             if (_currentButton == null) return;
@@ -162,7 +235,7 @@ namespace Proyecto
                 }
                 else
                 {
-                    _animationTimer.Stop();
+                    _animationTimer?.Stop();
                 }
             }
             else
@@ -174,12 +247,18 @@ namespace Proyecto
                 }
                 else
                 {
-                    _animationTimer.Stop();
+                    _animationTimer?.Stop();
                 }
             }
         }
 
+        #endregion
+
         #region Gestión de Audio
+
+        /// <summary>
+        /// Inicializa la música ambiental del menú
+        /// </summary>
         private void InicializarMusicaAmbiental()
         {
             try
@@ -197,6 +276,9 @@ namespace Proyecto
             }
         }
 
+        /// <summary>
+        /// Agrega el botón de control de música a la interfaz
+        /// </summary>
         private void AgregarControlMusica()
         {
             if (_btnMusica != null && this.Controls.Contains(_btnMusica))
@@ -207,68 +289,40 @@ namespace Proyecto
 
             _btnMusica = new Button
             {
-                Text = "🔊",
-                Size = new Size(30, 30),
-                Location = new Point(this.ClientSize.Width - 40, 10),
+                Text = _musicaActiva ? "🔊" : "🔇",
+                Size = new Size(40, 40),
+                Location = new Point(this.ClientSize.Width - 50, 10),
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(180, Color.LightBlue)
+                BackColor = ColorBotonMusica,
+                ForeColor = Color.DarkBlue,
+                Font = new Font("Segoe UI", 12, FontStyle.Bold)
             };
             _btnMusica.FlatAppearance.BorderSize = 0;
             _btnMusica.Click += (sender, e) => ToggleMusicaAmbiental();
             this.Controls.Add(_btnMusica);
+            _btnMusica.BringToFront();
         }
 
+        /// <summary>
+        /// Activa o desactiva la música ambiental
+        /// </summary>
         private void ToggleMusicaAmbiental()
         {
-            if (_audioManager != null)
+            if (_audioManager == null)
+                return;
+
+            _audioManager.Toggle();
+            _musicaActiva = _audioManager.IsPlaying;
+
+            if (_btnMusica != null)
             {
-                _audioManager.Toggle();
-                _musicaActiva = _audioManager.IsPlaying;
-                if (_btnMusica != null)
-                {
-                    _btnMusica.Text = _musicaActiva ? "🔊" : "🔇";
-                }
+                _btnMusica.Text = _musicaActiva ? "🔊" : "🔇";
             }
         }
-        #endregion
 
-        #region Navegación entre Formularios
-        private void AbrirFormulario<T>(string mensaje) where T : Form, new()
-        {
-            Debug.WriteLine($"Menú: Abriendo {typeof(T).Name}");
-            MessageBox.Show(mensaje);
-
-            // Detener y liberar música
-            _audioManager?.Stop();
-            _audioManager?.Dispose();
-            _audioManager = null;
-
-            // Crear y mostrar nuevo formulario
-            T formulario = new T();
-            formulario.FormClosed += (s, args) => RegresarAlMenu();
-            formulario.Show();
-            this.Hide();
-        }
-
-        private void RegresarAlMenu()
-        {
-            Debug.WriteLine("Menú: Regresando al menú principal");
-            this.Show();
-
-            // Reanudar música después de un breve retraso
-            Task.Delay(100).ContinueWith(t =>
-            {
-                if (this.IsDisposed) return;
-                this.BeginInvoke(new Action(() =>
-                {
-                    if (this.Visible && _musicaActiva)
-                    {
-                        ReanudarMusica();
-                    }
-                }));
-            });
-        }
-
+        /// <summary>
+        /// Reanuda la reproducción de música ambiental
+        /// </summary>
         private void ReanudarMusica()
         {
             if (_audioManager == null)
@@ -285,46 +339,114 @@ namespace Proyecto
                 }
                 catch
                 {
+                    // Reintentar la inicialización si falla la reproducción
                     InicializarMusicaAmbiental();
                 }
             }
         }
+
+        #endregion
+
+        #region Navegación entre Formularios
+
+        /// <summary>
+        /// Abre un formulario de nivel específico
+        /// </summary>
+        private void AbrirFormulario<T>(string mensaje) where T : Form, new()
+        {
+            Debug.WriteLine($"Menú: Abriendo {typeof(T).Name}");
+            MessageBox.Show(mensaje, "Nivel Seleccionado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            // Detener y liberar música para evitar superposición
+            _audioManager?.Stop();
+            _audioManager?.Dispose();
+            _audioManager = null;
+
+            // Crear y mostrar nuevo formulario
+            T formulario = new T();
+            formulario.FormClosed += (s, args) => RegresarAlMenu();
+            formulario.Show();
+            this.Hide();
+        }
+
+        /// <summary>
+        /// Regresa al menú principal desde otro formulario
+        /// </summary>
+        private void RegresarAlMenu()
+        {
+            if (this.IsDisposed)
+                return;
+
+            Debug.WriteLine("Menú: Regresando al menú principal");
+            this.Show();
+
+            // Reanudar música después de un breve retraso para evitar problemas
+            Task.Delay(100).ContinueWith(t =>
+            {
+                if (this.IsDisposed) return;
+
+                this.BeginInvoke(new Action(() =>
+                {
+                    if (this.Visible && _musicaActiva)
+                    {
+                        ReanudarMusica();
+                    }
+                }));
+            });
+        }
+
         #endregion
 
         #region Eventos de Botones
-        private void btnEasy_Click(object? sender, EventArgs e)
-        {
-            AbrirFormulario<FormNivelFacil>("Nivel Facil Seleccionado!");
-        }
 
-        private void btnMedium_Click(object? sender, EventArgs e)
-        {
-            AbrirFormulario<NivelMedio>("Nivel Medio seleccionado!");
-        }
+        /// <summary>
+        /// Abre el nivel fácil del juego
+        /// </summary>
+        private void btnEasy_Click(object? sender, EventArgs e) =>
+            AbrirFormulario<FormNivelFacil>("¡Nivel Fácil Seleccionado!");
 
-        private void btnHard_Click(object? sender, EventArgs e)
-        {
-            AbrirFormulario<NivelDificil>("Nivel dificil seleccionado!");
-        }
+        /// <summary>
+        /// Abre el nivel medio del juego
+        /// </summary>
+        private void btnMedium_Click(object? sender, EventArgs e) =>
+            AbrirFormulario<NivelMedio>("¡Nivel Medio Seleccionado!");
 
-        private void btnRules_Click(object? sender, EventArgs e)
-        {
+        /// <summary>
+        /// Abre el nivel difícil del juego
+        /// </summary>
+        private void btnHard_Click(object? sender, EventArgs e) =>
+            AbrirFormulario<NivelDificil>("¡Nivel Difícil Seleccionado!");
+
+        /// <summary>
+        /// Muestra las reglas del juego
+        /// </summary>
+        private void btnRules_Click(object? sender, EventArgs e) =>
             new ReglasDelJuego().Show();
-        }
 
-        private void btnCreators_Click(object? sender, EventArgs e)
-        {
+        /// <summary>
+        /// Muestra información sobre los creadores
+        /// </summary>
+        private void btnCreators_Click(object? sender, EventArgs e) =>
             new Integrantes().Show();
-        }
+
         #endregion
 
         #region Eventos del Formulario
+
+        /// <summary>
+        /// Maneja el cierre del formulario
+        /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            _animationTimer?.Stop();
+            _animationTimer?.Dispose();
             _audioManager?.Dispose();
             base.OnFormClosing(e);
         }
 
+        /// <summary>
+        /// Maneja los cambios de visibilidad del formulario
+        /// </summary>
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
@@ -334,9 +456,11 @@ namespace Proyecto
                 Task.Delay(300).ContinueWith(t =>
                 {
                     if (this.IsDisposed) return;
+
                     this.BeginInvoke(new Action(() =>
                     {
-                        if (this.Visible && _musicaActiva) ReanudarMusica();
+                        if (this.Visible && _musicaActiva)
+                            ReanudarMusica();
                     }));
                 });
             }
@@ -346,11 +470,34 @@ namespace Proyecto
             }
         }
 
+        /// <summary>
+        /// Maneja el evento de mostrar el formulario
+        /// </summary>
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            if (_audioManager == null) InicializarMusicaAmbiental();
+
+            if (_audioManager == null)
+                InicializarMusicaAmbiental();
+
+            if (_btnMusica != null)
+                _btnMusica.BringToFront();
         }
+
+        /// <summary>
+        /// Redimensiona el formulario y reposiciona el botón de música
+        /// </summary>
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            if (_btnMusica != null)
+            {
+                _btnMusica.Location = new Point(this.ClientSize.Width - 50, 10);
+                _btnMusica.BringToFront();
+            }
+        }
+
         #endregion
     }
 }
@@ -376,3 +523,4 @@ namespace Proyecto
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
