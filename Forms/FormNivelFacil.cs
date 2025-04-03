@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Media;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using Proyecto.Models;
 using Proyecto.Services;
 using Proyecto.Utilities;
@@ -19,18 +10,36 @@ namespace Proyecto
 {
     public partial class FormNivelFacil : Form
     {
-        private AudioManager? _audioManager;
-        private bool _musicaActiva = true;
+        #region Constantes y campos estáticos
 
+        // Constantes del juego
         private const int SudokuSize = 9;
         private const int BoxSize = 3;
         private const int CellSize = 40;
         private const int GridOffset = 10;
-        private const string TextBoxNamePrefix = "txt";
+        private const int TiempoLimiteMinutos = 5;
 
+        // Colores predefinidos
+        private static readonly Color ColorCeldaFija = Color.FromArgb(173, 216, 230);
+        private static readonly Color ColorCeldaSeleccionada = Color.LightYellow;
+        private static readonly Color ColorCeldaError = Color.LightCoral;
+        private static readonly Color ColorTextoNormal = Color.DarkBlue;
+        private static readonly Color ColorTextoFijo = Color.Black;
+        private static readonly Color ColorTextoSolucion = Color.Green;
+        private static readonly Color ColorBoton = Color.MediumSeaGreen;
+        private static readonly Color ColorBotonHover = Color.SeaGreen;
+        private static readonly Color ColorBotonPress = Color.DarkGreen;
+
+        #endregion
+
+        #region Campos privados
+
+        private AudioManager? _audioManager;
+        private bool _musicaActiva = true;
         private SudokuBoard _sudokuBoard;
         private GameTimer _gameTimer;
         private GameStats _gameStats;
+        private System.Windows.Forms.Timer _restoreColorsTimer;
 
         private readonly int[,] _sudokuFacil = {
             { 5, 3, 4, 6, 7, 8, 9, 1, 2 },
@@ -56,20 +65,42 @@ namespace Proyecto
             { true, true, true, false, false, false, true, true, true }
         };
 
+        #endregion
+
+        #region Inicialización
+
+        /// <summary>
+        /// Constructor del formulario de nivel fácil
+        /// </summary>
         public FormNivelFacil()
         {
             InitializeComponent();
+
+            // Inicializar temporizador reutilizable para restauración de colores
+            _restoreColorsTimer = new System.Windows.Forms.Timer()
+            {
+                Interval = 200,
+                Enabled = false
+            };
+
+            _restoreColorsTimer.Tick += (s, e) => {
+                _sudokuBoard?.RestaurarColores();
+                _restoreColorsTimer.Stop();
+            };
         }
 
+        /// <summary>
+        /// Evento de carga del formulario
+        /// </summary>
         private void FormNivelFacil_Load(object sender, EventArgs e)
         {
-            // Inicializar componentes del juego
             InicializarComponentes();
-
-            // Inicializar la música ambiental
             InicializarMusicaAmbiental();
         }
 
+        /// <summary>
+        /// Inicializa todos los componentes del juego
+        /// </summary>
         private void InicializarComponentes()
         {
             // Estilizar botones
@@ -82,26 +113,29 @@ namespace Proyecto
 
             // Inicializar temporizador del juego
             _gameTimer = new GameTimer(timer1, lblTiempo);
-            _gameTimer.Start();
             timer1.Interval = 1000;
             timer1.Tick += Timer1_Tick;
+            _gameTimer.Start();
 
             // Inicializar estadísticas del juego
             _gameStats = new GameStats(lblErrores, LblpartidasG, LblpartidasP);
         }
 
+        #endregion
+
+        #region Música ambiental
+
+        /// <summary>
+        /// Inicializa la música ambiental del juego
+        /// </summary>
         private void InicializarMusicaAmbiental()
         {
             try
             {
-                // Liberamos cualquier instancia previa
                 _audioManager?.Dispose();
-
-                // Inicializamos con el archivo de audio del nivel fácil
                 _audioManager = new AudioManager("ambient-easy.wav");
                 _audioManager.PlayLooping();
                 _musicaActiva = true;
-
                 AgregarControlMusica();
             }
             catch (Exception ex)
@@ -113,13 +147,19 @@ namespace Proyecto
             }
         }
 
+        /// <summary>
+        /// Agrega el botón de control de música a la interfaz
+        /// </summary>
         private void AgregarControlMusica()
         {
             Button btnMusica = new Button
             {
                 Text = "🔊",
                 Size = new Size(40, 40),
-                Location = new Point(this.ClientSize.Width - 40, 10)
+                Location = new Point(ClientSize.Width - 50, 10),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(100, 149, 237), // Azul más suave para distinguirlo
+                ForeColor = Color.White
             };
 
             btnMusica.Click += (sender, e) =>
@@ -127,9 +167,12 @@ namespace Proyecto
                 ToggleMusicaAmbiental();
                 btnMusica.Text = _musicaActiva ? "🔊" : "🔇";
             };
-            this.Controls.Add(btnMusica);
+            Controls.Add(btnMusica);
         }
 
+        /// <summary>
+        /// Activa o desactiva la música ambiental
+        /// </summary>
         private void ToggleMusicaAmbiental()
         {
             if (_audioManager != null)
@@ -139,109 +182,162 @@ namespace Proyecto
             }
         }
 
+        /// <summary>
+        /// Evento ejecutado al cerrar el formulario
+        /// </summary>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             _audioManager?.Dispose();
+            _restoreColorsTimer?.Dispose();
             base.OnFormClosing(e);
         }
 
+        #endregion
+
+        #region Eventos de TextBox
+
+        /// <summary>
+        /// Evento disparado cuando un TextBox obtiene el foco
+        /// </summary>
         private void TextBox_Enter(object? sender, EventArgs e)
         {
-            if (sender is TextBox focusedTxt)
+            if (sender is not TextBox focusedTxt)
+                return;
+
+            if (_sudokuBoard.FocusedTextBox != null && !_sudokuBoard.FocusedTextBox.ReadOnly)
             {
-                if (_sudokuBoard.FocusedTextBox != null && !_sudokuBoard.FocusedTextBox.ReadOnly)
-                {
-                    _sudokuBoard.FocusedTextBox.BackColor = Color.White;
-                }
-                _sudokuBoard.FocusedTextBox = focusedTxt;
-                if (!_sudokuBoard.FocusedTextBox.ReadOnly)
-                {
-                    _sudokuBoard.FocusedTextBox.BackColor = Color.LightYellow;
-                }
+                _sudokuBoard.FocusedTextBox.BackColor = Color.White;
+            }
+
+            _sudokuBoard.FocusedTextBox = focusedTxt;
+
+            if (!_sudokuBoard.FocusedTextBox.ReadOnly)
+            {
+                _sudokuBoard.FocusedTextBox.BackColor = ColorCeldaSeleccionada;
             }
         }
 
+        /// <summary>
+        /// Evento disparado cuando cambia el texto de un TextBox
+        /// </summary>
         private void TextBox_TextChanged(object? sender, EventArgs e)
         {
             if (_sudokuBoard.ShowingSolution)
-            {
                 return;
-            }
 
             if (sender is TextBox changedTxt && changedTxt.Tag is Point pos)
             {
                 int fila = pos.X;
                 int columna = pos.Y;
+
                 if (!_posicionesFijas[fila, columna] && !string.IsNullOrEmpty(changedTxt.Text))
                 {
-                    changedTxt.ForeColor = Color.DarkBlue;
+                    changedTxt.ForeColor = ColorTextoNormal;
                 }
             }
 
-            // Verificar si el sudoku está completo
+            // Verificar si el sudoku está completo - mover a un hilo separado para no bloquear
             if (_sudokuBoard.EstaCompleto())
             {
-                VerificarJuego();
+                BeginInvoke(new Action(VerificarJuego));
             }
         }
 
+        /// <summary>
+        /// Valida la entrada de texto en los TextBox del Sudoku
+        /// </summary>
         private void ValidarEntrada(object? sender, KeyPressEventArgs e)
         {
-            if (sender is TextBox txt && txt.Tag is Point pos)
+            if (sender is not TextBox txt || txt.Tag is not Point pos)
+                return;
+
+            // Solo permite números del 1-9 y la tecla de retroceso
+            if (!char.IsDigit(e.KeyChar) || e.KeyChar == '0')
             {
-                if (!char.IsDigit(e.KeyChar) || e.KeyChar == '0')
+                if (e.KeyChar != (char)Keys.Back)
                 {
-                    if (e.KeyChar != (char)Keys.Back)
-                    {
-                        e.Handled = true;
-                        return;
-                    }
+                    e.Handled = true;
                 }
-                else
-                {
-                    int fila = pos.X;
-                    int columna = pos.Y;
-                    int numeroIngresado = int.Parse(e.KeyChar.ToString());
+                return;
+            }
 
-                    if (!_sudokuBoard.EsNumeroValido(fila, columna, numeroIngresado))
-                    {
-                        e.Handled = true;
-                        _gameStats.IncrementarErrores();
-                        MessageBox.Show($"El número {numeroIngresado} no es válido en esta posición.",
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            int fila = pos.X;
+            int columna = pos.Y;
+            int numeroIngresado = int.Parse(e.KeyChar.ToString());
 
-                        txt.BackColor = Color.LightCoral;
-                        _sudokuBoard.ResaltarConflictos(fila, columna, numeroIngresado);
+            if (!_sudokuBoard.EsNumeroValido(fila, columna, numeroIngresado))
+            {
+                e.Handled = true;
+                _gameStats.IncrementarErrores();
 
-                        System.Threading.Timer? timer = null;
-                        timer = new System.Threading.Timer((obj) =>
-                        {
-                            txt.Invoke(new Action(() =>
-                            {
-                                if (!txt.ReadOnly)
-                                {
-                                    txt.BackColor = Color.White;
-                                }
-                                _sudokuBoard.RestaurarColores();
-                            }));
-                            timer?.Dispose();
-                        }, null, 200, System.Threading.Timeout.Infinite);
-                    }
-                }
+                // Mostrar mensaje de error
+                MessageBox.Show($"El número {numeroIngresado} no es válido en esta posición.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // Resaltar error
+                txt.BackColor = ColorCeldaError;
+                _sudokuBoard.ResaltarConflictos(fila, columna, numeroIngresado);
+
+                // Restaurar colores después de un tiempo
+                _restoreColorsTimer.Stop();
+                _restoreColorsTimer.Start();
             }
         }
 
+        /// <summary>
+        /// Maneja las teclas de navegación entre celdas
+        /// </summary>
+        private void TextBox_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (sender is not TextBox txt || txt.Tag is not Point pos)
+                return;
+
+            int fila = pos.X;
+            int columna = pos.Y;
+            var textBoxes = _sudokuBoard.TextBoxes;
+
+            switch (e.KeyCode)
+            {
+                case Keys.Left:
+                    if (columna > 0) textBoxes[fila, columna - 1].Focus();
+                    e.SuppressKeyPress = true;
+                    break;
+                case Keys.Right:
+                    if (columna < SudokuSize - 1) textBoxes[fila, columna + 1].Focus();
+                    e.SuppressKeyPress = true;
+                    break;
+                case Keys.Up:
+                    if (fila > 0) textBoxes[fila - 1, columna].Focus();
+                    e.SuppressKeyPress = true;
+                    break;
+                case Keys.Down:
+                    if (fila < SudokuSize - 1) textBoxes[fila + 1, columna].Focus();
+                    e.SuppressKeyPress = true;
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region Eventos del juego
+
+        /// <summary>
+        /// Evento Tick del temporizador principal
+        /// </summary>
         private void Timer1_Tick(object? sender, EventArgs e)
         {
             _gameTimer.ActualizarDisplay();
 
-            // Verificar tiempo límite (5 minutos)
-            if (_gameTimer.ElapsedTime >= TimeSpan.FromMinutes(5))
+            // Verificar tiempo límite
+            if (_gameTimer.ElapsedTime >= TimeSpan.FromMinutes(TiempoLimiteMinutos))
             {
                 PerderTiempo();
             }
         }
 
+        /// <summary>
+        /// Verifica si el juego se ha completado correctamente
+        /// </summary>
         private void VerificarJuego()
         {
             _gameTimer.Stop();
@@ -261,6 +357,43 @@ namespace Proyecto
             }
         }
 
+        /// <summary>
+        /// Muestra la solución del Sudoku
+        /// </summary>
+        private void SolucionSudoku()
+        {
+            _sudokuBoard.MostrarSolucion();
+            _gameStats.RegistrarDerrota();
+            MessageBox.Show("Se ha mostrado la solución. Esta partida se contará como perdida.",
+                "Solución Mostrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Maneja la pérdida por tiempo agotado
+        /// </summary>
+        private void PerderTiempo()
+        {
+            _gameTimer.Stop();
+            _gameStats.RegistrarDerrota();
+            MessageBox.Show($"Se ha agotado el tiempo límite de {TiempoLimiteMinutos} minutos. Esta partida se contará como perdida.",
+                "Tiempo Agotado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Reinicia el juego a su estado inicial
+        /// </summary>
+        private void Reiniciar()
+        {
+            _gameTimer.Reset();
+            _gameStats.Reiniciar();
+            btnPausar.Text = "Pausar";
+            btnReanudar.Enabled = false;
+            _sudokuBoard.Reiniciar();
+        }
+
+        /// <summary>
+        /// Maneja la pausa y reanudación del juego
+        /// </summary>
         private void PausarReanudar()
         {
             if (_gameTimer.IsPaused)
@@ -277,10 +410,11 @@ namespace Proyecto
             }
         }
 
-        private void btnPausar_Click_1(object sender, EventArgs e)
-        {
-            PausarReanudar();
-        }
+        #endregion
+
+        #region Eventos de botones
+
+        private void btnPausar_Click_1(object sender, EventArgs e) => PausarReanudar();
 
         private void btnReanudar_Click_1(object sender, EventArgs e)
         {
@@ -290,32 +424,15 @@ namespace Proyecto
             }
         }
 
-        private void Reiniciar()
-        {
-            _gameTimer.Reset();
-            _gameStats.Reiniciar();
-            btnPausar.Text = "Pausar";
-            btnReanudar.Enabled = false;
-            _sudokuBoard.Reiniciar();
-        }
-
-        private void btnReinicar_Click(object sender, EventArgs e)
-        {
-            Reiniciar();
-        }
-
-        private void SolucionSudoku()
-        {
-            _sudokuBoard.MostrarSolucion();
-            _gameStats.RegistrarDerrota();
-            MessageBox.Show("Se ha mostrado la solución. Esta partida se contará como perdida.",
-                "Solución Mostrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        private void btnReinicar_Click(object sender, EventArgs e) => Reiniciar();
 
         private void btnSolucion_Click_1(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("¿Estás seguro de que quieres ver la solución? Se contará como una partida perdida.",
-                "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult result = MessageBox.Show(
+                "¿Estás seguro de que quieres ver la solución? Se contará como una partida perdida.",
+                "Confirmar",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
             {
@@ -323,102 +440,83 @@ namespace Proyecto
             }
         }
 
-        private void FormNivelFacil_Paint(object sender, PaintEventArgs e)
-        {
-            if (_sudokuBoard != null)
-            {
-                _sudokuBoard.DibujarCuadricula(e.Graphics, CellSize, GridOffset);
-            }
-        }
-
-        private void btnVerificar_Click(object sender, EventArgs e)
-        {
-            VerificarJuego();
-        }
-
-        private void PerderTiempo()
-        {
-            _gameTimer.Stop();
-            _gameStats.RegistrarDerrota();
-            MessageBox.Show("Se ha agotado el tiempo. Esta partida se contará como perdida.",
-                "Tiempo Agotado", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void TextBox_KeyDown(object? sender, KeyEventArgs e)
-        {
-            if (sender is TextBox txt && txt.Tag is Point pos)
-            {
-                int fila = pos.X;
-                int columna = pos.Y;
-                var textBoxes = _sudokuBoard.TextBoxes;
-
-                switch (e.KeyCode)
-                {
-                    case Keys.Left:
-                        if (columna > 0) textBoxes[fila, columna - 1].Focus();
-                        e.SuppressKeyPress = true;
-                        break;
-                    case Keys.Right:
-                        if (columna < SudokuSize - 1) textBoxes[fila, columna + 1].Focus();
-                        e.SuppressKeyPress = true;
-                        break;
-                    case Keys.Up:
-                        if (fila > 0) textBoxes[fila - 1, columna].Focus();
-                        e.SuppressKeyPress = true;
-                        break;
-                    case Keys.Down:
-                        if (fila < SudokuSize - 1) textBoxes[fila + 1, columna].Focus();
-                        e.SuppressKeyPress = true;
-                        break;
-                }
-            }
-        }
-
-        private void EstilizarBotones()
-        {
-            Color btnBackColor = Color.MediumSeaGreen;
-            Color btnMouseOver = Color.SeaGreen;
-            Color btnMouseDown = Color.DarkGreen;
-
-            btnPausar.FlatStyle = FlatStyle.Flat;
-            btnPausar.FlatAppearance.BorderSize = 0;
-            btnPausar.BackColor = btnBackColor;
-            btnPausar.ForeColor = Color.White;
-            btnPausar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnPausar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnPausar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnReanudar.FlatStyle = FlatStyle.Flat;
-            btnReanudar.FlatAppearance.BorderSize = 0;
-            btnReanudar.BackColor = btnBackColor;
-            btnReanudar.ForeColor = Color.White;
-            btnReanudar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnReanudar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnReanudar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnReinicar.FlatStyle = FlatStyle.Flat;
-            btnReinicar.FlatAppearance.BorderSize = 0;
-            btnReinicar.BackColor = btnBackColor;
-            btnReinicar.ForeColor = Color.White;
-            btnReinicar.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnReinicar.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnReinicar.FlatAppearance.MouseDownBackColor = btnMouseDown;
-
-            btnSolucion.FlatStyle = FlatStyle.Flat;
-            btnSolucion.FlatAppearance.BorderSize = 0;
-            btnSolucion.BackColor = btnBackColor;
-            btnSolucion.ForeColor = Color.White;
-            btnSolucion.Font = new Font("Arial", 10, FontStyle.Bold);
-            btnSolucion.FlatAppearance.MouseOverBackColor = btnMouseOver;
-            btnSolucion.FlatAppearance.MouseDownBackColor = btnMouseDown;
-        }
+        private void btnVerificar_Click(object sender, EventArgs e) => VerificarJuego();
 
         private void LblpartidasP_Click(object sender, EventArgs e)
         {
             // Este método está vacío pero se mantiene para evitar errores en el Designer
         }
+
+        #endregion
+
+        #region Gráficos e interfaz
+
+        /// <summary>
+        /// Evento Paint del formulario para dibujar la cuadrícula
+        /// </summary>
+        private void FormNivelFacil_Paint(object sender, PaintEventArgs e)
+        {
+            _sudokuBoard?.DibujarCuadricula(e.Graphics, CellSize, GridOffset);
+        }
+
+        /// <summary>
+        /// Estiliza un botón con apariencia estandarizada
+        /// </summary>
+        private void EstilizarBoton(Button btn)
+        {
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.BackColor = ColorBoton;
+            btn.ForeColor = Color.White;
+            btn.Font = new Font("Arial", 10, FontStyle.Bold);
+            btn.FlatAppearance.MouseOverBackColor = ColorBotonHover;
+            btn.FlatAppearance.MouseDownBackColor = ColorBotonPress;
+        }
+
+        /// <summary>
+        /// Aplica estilo a todos los botones del formulario
+        /// </summary>
+        private void EstilizarBotones()
+        {
+            // Mantener las imágenes de fondo originales
+            Image? pausarBg = btnPausar.BackgroundImage;
+            Image? reanudarBg = btnReanudar.BackgroundImage;
+            Image? reiniciarBg = btnReinicar.BackgroundImage;
+            Image? solucionBg = btnSolucion.BackgroundImage;
+
+            // Aplicar estilos
+            EstilizarBoton(btnPausar);
+            EstilizarBoton(btnReanudar);
+            EstilizarBoton(btnReinicar);
+            EstilizarBoton(btnSolucion);
+
+            // Restaurar imágenes de fondo
+            btnPausar.BackgroundImage = pausarBg;
+            btnReanudar.BackgroundImage = reanudarBg;
+            btnReinicar.BackgroundImage = reiniciarBg;
+            btnSolucion.BackgroundImage = solucionBg;
+
+            // Mantener layout de imágenes
+            btnPausar.BackgroundImageLayout = ImageLayout.Stretch;
+            btnReanudar.BackgroundImageLayout = ImageLayout.Stretch;
+            btnReinicar.BackgroundImageLayout = ImageLayout.Stretch;
+            btnSolucion.BackgroundImageLayout = ImageLayout.Stretch;
+
+            // Si existe btnVerificar (puede que no esté en el diseñador pero se menciona en el código)
+            if (Controls.Find("btnVerificar", true).Length > 0)
+            {
+                Button? btnVerificar = Controls.Find("btnVerificar", true)[0] as Button;
+                if (btnVerificar != null)
+                {
+                    EstilizarBoton(btnVerificar);
+                }
+            }
+        }
+
+        #endregion
     }
 }
+
 /* Copyright (C) 2025 
 
      - Esmeralda Janeth Hernández Alfaro
